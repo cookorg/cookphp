@@ -2,7 +2,7 @@
     "name": "cookorg/cookphp",
     "type": "project",
     "description": "CookPHP Framework for PHP 7",
-    "keywords": ["log", "logging"],
+    "keywords": ["cookphp"],
     "homepage": "http://cookphp.org/",
     "license": "Apache-2.0",
     "authors": [
