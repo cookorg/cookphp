@@ -1,5 +1,5 @@
 {
-    "name": "cookorg/CookPHP",
+    "name": "cookorg/cookphp",
     "type": "project",
     "description": "CookPHP Framework for PHP 7",
     "keywords": ["log", "logging"],
