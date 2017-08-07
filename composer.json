@@ -1,0 +1,19 @@
+{
+    "name": "cookorg/CookPHP",
+    "type": "project",
+    "description": "CookPHP Framework for PHP 7",
+    "keywords": ["log", "logging"],
+    "homepage": "http://cookphp.org/",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "CookPHP",
+            "email": "admin@cookphp.org",
+            "homepage": "http://cookphp.org/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0"
+    }
+}
