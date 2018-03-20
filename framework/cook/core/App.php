@@ -8,7 +8,6 @@ use cook\core\Container as DI;
 use cook\core\Invoke;
 use cook\router\Router;
 use cook\router\RouterBase;
-use cook\http\Request;
 
 /**
  * 应用处理
@@ -35,12 +34,6 @@ class App {
     public $invoke;
 
     /**
-     * 客户请求类
-     * @var Request
-     */
-    public $request;
-
-    /**
      * 控制器
      * @var Route
      */
@@ -52,12 +45,11 @@ class App {
      */
     public $router;
 
-    public function __construct(Benchmark $benchmark, Config $config, Invoke $invoke, Router $router, Request $request) {
+    public function __construct(Benchmark $benchmark, Config $config, Invoke $invoke, Router $router) {
         $this->benchmark = $benchmark->markTime('start_time')->markMemory('start_memory');
         $this->config = $config;
         $this->invoke = $invoke;
         $this->router = $router;
-        $this->request = $request;
     }
 
     /**
@@ -84,7 +76,7 @@ class App {
             $router = DI::get('\\' . APPNAMESPACE . '\\Router');
             if ($router instanceof RouterBase) {
                 $router->start();
-                ($this->router->matchUrl($this->request->getPathInfo()) instanceof Router) ? (!empty($this->router->route['controller']) && !empty($this->router->route['action']) ? $this->invoke->method($this->router->route['controller'], $this->router->route['action'], $this->router->getValues()) : (!empty($this->router->route['controller']) ? $this->invoke->call($this->router->route['controller'], $this->router->getValues()) : null)) : $this->showError(404);
+                ($this->router->matchUrl() instanceof Router) ? (!empty($this->router->route['controller']) && !empty($this->router->route['action']) ? $this->invoke->method($this->router->route['controller'], $this->router->route['action'], $this->router->getValues()) : (!empty($this->router->route['controller']) ? $this->invoke->call($this->router->route['controller'], $this->router->getValues()) : null)) : $this->showError(404);
             }
         } else {
             $this->showError(500);

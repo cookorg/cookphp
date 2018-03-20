@@ -227,12 +227,8 @@ class Router implements RequestMethod {
      * @param string $url
      * @return $this
      */
-    public function matchUrl($url) {
-        $url = '/' . ltrim($url, '/');
-        if ($this->matchUrlDirectly($url) || $this->matchUrlWithParameters($url)) {
-            return $this;
-        }
-        return null;
+    public function matchUrl($url = null) {
+        return ($this->matchUrlDirectly(($url = '/' . ltrim($url ?: $this->request->getPathInfo(), '/'))) || $this->matchUrlWithParameters($url)) ? $this : null;
     }
 
     /**

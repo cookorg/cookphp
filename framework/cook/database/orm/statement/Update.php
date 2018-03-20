@@ -1,11 +1,11 @@
 <?php
 
-namespace cook\database\ORM\Statement;
+namespace cook\database\orm\statement;
 
 /**
  * 更新类
  */
-class Update extends Statement {
+class Update extends statement {
     /**
      * Constructor.
      *

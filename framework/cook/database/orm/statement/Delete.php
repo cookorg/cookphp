@@ -1,11 +1,11 @@
 <?php
 
-namespace cook\database\ORM\Statement;
+namespace cook\database\orm\statement;
 
 /**
  * 删除类
  */
-class Delete extends Statement {
+class Delete extends statement {
 
     /**
      * @return string

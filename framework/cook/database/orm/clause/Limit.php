@@ -1,6 +1,6 @@
 <?php
 
-namespace cook\database\ORM\Clause;
+namespace cook\database\orm\clause;
 
 /**
  * Class Limit

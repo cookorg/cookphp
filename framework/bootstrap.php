@@ -65,7 +65,7 @@ defined('APPNAMESPACE') ||
          * APP命名空间名称
          * @var string
          */
-        define('APPNAMESPACE', 'App');
+        define('APPNAMESPACE', 'app');
 
 require BASEPATH . 'cook' . DS . 'core' . DS . 'Container.php';
 require BASEPATH . 'cook' . DS . 'core' . DS . 'Autoloader.php';

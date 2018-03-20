@@ -1,6 +1,6 @@
 <?php
 
-namespace App\controller;
+namespace app\controller;
 
 use cook\http\Output;
 

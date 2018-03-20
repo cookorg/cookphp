@@ -1,12 +1,12 @@
 <?php
 
-namespace cook\database\ORM;
+namespace cook\database\orm;
 
 use cook\core\Container as DI;
-use cook\database\ORM\Statement\Select;
-use cook\database\ORM\Statement\Insert;
-use cook\database\ORM\Statement\Update;
-use cook\database\ORM\Statement\Delete;
+use cook\database\orm\statement\Select;
+use cook\database\orm\statement\Insert;
+use cook\database\orm\statement\Update;
+use cook\database\orm\statement\Delete;
 use cook\database\Db;
 
 /**

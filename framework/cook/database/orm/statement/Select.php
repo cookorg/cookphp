@@ -1,19 +1,19 @@
 <?php
 
-namespace cook\database\ORM\Statement;
+namespace cook\database\orm\statement;
 
-use cook\database\ORM\Clause\Limit;
-use cook\database\ORM\Clause\Order;
-use cook\database\ORM\Clause\Where;
-use cook\database\ORM\Clause\Group;
-use cook\database\ORM\Clause\Having;
-use cook\database\ORM\Clause\Join;
-use cook\database\ORM\Clause\Offset;
+use cook\database\orm\clause\Limit;
+use cook\database\orm\clause\Order;
+use cook\database\orm\clause\Where;
+use cook\database\orm\clause\Group;
+use cook\database\orm\clause\Having;
+use cook\database\orm\clause\Join;
+use cook\database\orm\clause\Offset;
 use cook\database\Db;
 /**
  * 查询类
  */
-class Select extends Statement {
+class Select extends statement {
 
     /**
      * @var bool
@@ -370,7 +370,7 @@ class Select extends Statement {
 
     /**
      *  执行一条预处理语句
-     * @return \PDOStatement
+     * @return \PDOstatement
      */
     public function execute() {
         return $this->db->query($this->getSql(), $this->values);

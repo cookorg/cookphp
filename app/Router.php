@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace app;
 
 use cook\router\RouterBase;
 
@@ -15,16 +15,12 @@ class Router extends RouterBase {
     }
 
     private function admin() {
-//        $this->router->group('/admin', function (){
-//            
-//            
-//        });
+
         
         
         $this->router
                 ->get_post('/', controller\Index::class, 'index')
-                ->get_post('/admin', controller\Index::class, 'index')
-                ;
+               ;
     }
 
     private function weixin() {

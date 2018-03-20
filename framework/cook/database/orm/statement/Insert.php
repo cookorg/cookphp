@@ -1,11 +1,16 @@
 <?php
 
-namespace cook\database\ORM\Statement;
+namespace cook\database\orm\statement;
 
 /**
  * 新增类
  */
-class Insert extends Statement {
+class Insert extends statement {
+
+    /**
+     * @var bool
+     */
+    protected $replace = false;
 
     public function data(array $data) {
         if (!empty($data)) {
@@ -23,6 +28,11 @@ class Insert extends Statement {
             }
             $this->setPlaceholders($datas);
         }
+        return $this;
+    }
+
+    public function replace($replace = true) {
+        $this->replace = $replace;
         return $this;
     }
 
@@ -82,7 +92,7 @@ class Insert extends Statement {
             trigger_error('Missing values for insertion', E_USER_ERROR);
         }
 
-        $sql = 'INSERT INTO ' . $this->table;
+        $sql = ($this->replace ? 'REPLACE INTO ' : 'INSERT INTO ') . $this->table;
         $sql .= ' ' . $this->getColumns();
         $sql .= ' VALUES ' . $this->getPlaceholders();
 
@@ -96,7 +106,7 @@ class Insert extends Statement {
      */
     public function execute($insertId = true) {
         $exec = $this->db->exec($this->getSql(), $this->values);
-        return $insertId ? $this->db->lastInsertId() : $exec;
+        return $insertId && !$this->replace ? $this->db->lastInsertId() : $exec;
     }
 
     /**

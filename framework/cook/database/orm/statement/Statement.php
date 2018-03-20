@@ -1,16 +1,16 @@
 <?php
 
-namespace cook\database\ORM\Statement;
+namespace cook\database\orm\statement;
 
-use cook\database\ORM\Clause\Limit;
-use cook\database\ORM\Clause\Order;
-use cook\database\ORM\Clause\Where;
+use cook\database\orm\clause\Limit;
+use cook\database\orm\clause\Order;
+use cook\database\orm\clause\Where;
 use cook\database\Db;
 
 /**
- * Class Statement
+ * Class statement
  */
-abstract class Statement {
+abstract class statement {
 
     /**
      * @var array

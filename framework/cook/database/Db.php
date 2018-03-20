@@ -7,7 +7,7 @@ use cook\log\Log;
 use PDO;
 use Throwable;
 use PDOStatement;
-use cook\database\ORM\Query as ORM;
+use cook\database\orm\Query as ORM;
 
 /**
  * 数据库类
