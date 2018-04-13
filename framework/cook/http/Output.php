@@ -139,12 +139,12 @@ class Output implements StatusCode {
         foreach ($this->headers as $header) {
             header($header, true);
         }
-        if (strpos($_SERVER['HTTP_ACCEPT_ENCODING'] ?? '', 'gzip') !== false) {
-            $output = gzencode($output, 9);
-            header('Content-Encoding: gzip');
-            header('Vary: Accept-Encoding');
-            header('Content-Length:' . strlen($output));
-        }
+//        if (strpos($_SERVER['HTTP_ACCEPT_ENCODING'] ?? '', 'gzip') !== false) {
+//            $output = gzencode($output, 9);
+//            header('Content-Encoding: gzip');
+//            header('Vary: Accept-Encoding');
+//            header('Content-Length:' . strlen($output));
+//        }
         echo $output;
     }
 

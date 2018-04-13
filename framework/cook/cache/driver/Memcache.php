@@ -55,12 +55,9 @@ class Memcache extends Driver {
         if ($expire instanceof \DateTime) {
             $expire = $expire->getTimestamp() - time();
         }
-        if ($this->tag && !$this->has($name)) {
-            $first = true;
-        }
+        
         $key = $this->filename($name);
         if ($this->handler->set($key, $value, 0, $expire)) {
-            isset($first) && $this->setTagItem($key);
             return true;
         }
         return false;

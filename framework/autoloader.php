@@ -8,5 +8,6 @@ return[
     'cook\database' => BASEPATH . 'cook/database',
     'cook\http' => BASEPATH . 'cook/http',
     'cook\log' => BASEPATH . 'cook/log',
-    'library' => BASEPATH . 'library'
+    'library' => BASEPATH . 'library',
+    'PHPMailer' => BASEPATH . 'library/PHPMailer/src'
 ];

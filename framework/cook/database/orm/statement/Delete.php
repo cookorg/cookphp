@@ -5,7 +5,7 @@ namespace cook\database\orm\statement;
 /**
  * 删除类
  */
-class Delete extends statement {
+class Delete extends Statement {
 
     /**
      * @return string
@@ -23,10 +23,10 @@ class Delete extends statement {
     }
 
     /**
-     * @return int
+     * @return \PDOstatement
      */
     public function execute() {
-        return $this->db->exec($this->getSql(), $this->values);
+        return $this->db->exec($this->getSql(), $this->values)->rowCount();
     }
 
 }

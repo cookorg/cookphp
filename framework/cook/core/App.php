@@ -8,6 +8,7 @@ use cook\core\Container as DI;
 use cook\core\Invoke;
 use cook\router\Router;
 use cook\router\RouterBase;
+use Throwable;
 
 /**
  * 应用处理
@@ -72,21 +73,24 @@ class App {
      * 处理路由
      */
     protected function initroute() {
-        if (class_exists('\\' . APPNAMESPACE . '\\Router')) {
-            $router = DI::get('\\' . APPNAMESPACE . '\\Router');
-            if ($router instanceof RouterBase) {
-                $router->start();
-                ($this->router->matchUrl() instanceof Router) ? (!empty($this->router->route['controller']) && !empty($this->router->route['action']) ? $this->invoke->method($this->router->route['controller'], $this->router->route['action'], $this->router->getValues()) : (!empty($this->router->route['controller']) ? $this->invoke->call($this->router->route['controller'], $this->router->getValues()) : null)) : $this->showError(404);
+       // try {
+            if (class_exists('\\' . APPNAMESPACE . '\\Router')) {
+                $router = DI::get('\\' . APPNAMESPACE . '\\Router');
+                if ($router instanceof RouterBase) {
+                    $router->start();
+                    ($this->router->matchUrl() instanceof Router) ? (!empty($this->router->route['controller']) && !empty($this->router->route['action']) ? $this->invoke->method($this->router->route['controller'], $this->router->route['action'], $this->router->getValues()) : (!empty($this->router->route['controller']) ? $this->invoke->call($this->router->route['controller'], $this->router->getValues()) : null)) : $this->showError(404);
+                }
+            } else {
+                $this->showError(500);
             }
-        } else {
-            $this->showError(500);
-        }
+       // } catch (Throwable $e) {
+            //print_r($e);
+         //   throw $e;
+       // }
     }
 
     public function showError($code) {
-        echo $code;
         exit;
-        //class_exists('\\' . APPNAMESPACE . '\\controller\\Errors') && DI::get('\\' . APPNAMESPACE . '\\controller\\Errors')->errors($code);
     }
 
 }

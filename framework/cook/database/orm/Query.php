@@ -7,7 +7,6 @@ use cook\database\orm\statement\Select;
 use cook\database\orm\statement\Insert;
 use cook\database\orm\statement\Update;
 use cook\database\orm\statement\Delete;
-use cook\database\Db;
 
 /**
  * 数据库查询
@@ -26,7 +25,7 @@ class Query {
      * @return Select
      */
     public function select($from = null) {
-        return DI::create(Select::class)->from($this->parsefrom($from));
+        return DI::create(Select::class)->from($from);
     }
 
     /**
@@ -40,7 +39,7 @@ class Query {
             $data = $this->toArray();
             $this->_data = [];
         }
-        return DI::create(Insert::class)->from($this->parsefrom($from))->data($data);
+        return DI::create(Insert::class)->from($from)->data($data);
     }
 
     /**
@@ -50,7 +49,7 @@ class Query {
      * @return Insert
      */
     public function inserts(array $datas, $from = null) {
-        return DI::create(Insert::class)->from($this->parsefrom($from))->datas($datas);
+        return DI::create(Insert::class)->from($from)->datas($datas);
     }
 
     /**
@@ -64,7 +63,7 @@ class Query {
             $data = $this->toArray();
             $this->_data = [];
         }
-        return DI::create(Update::class)->from($this->parsefrom($from))->set($data);
+        return DI::create(Update::class)->from($from)->set($data);
     }
 
     /**
@@ -73,19 +72,7 @@ class Query {
      * @return Delete
      */
     public function delete($from = null) {
-        return DI::create(Delete::class)->from($this->parsefrom($from));
-    }
-
-    /**
-     * 解析表
-     * @param string  $form 表名
-     * @return string
-     */
-    public function parsefrom($form) {
-        if (empty($form)) {
-            return null;
-        }
-        return DI::get(Db::class)->dbprefix . strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $form), '_'));
+        return DI::create(Delete::class)->from($from);
     }
 
     public function toArray() {

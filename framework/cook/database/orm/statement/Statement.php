@@ -10,7 +10,7 @@ use cook\database\Db;
 /**
  * Class statement
  */
-abstract class statement {
+abstract class Statement {
 
     /**
      * @var array
@@ -58,11 +58,11 @@ abstract class statement {
      * @param Order $order
      * @param Limit $limit
      */
-    public function __construct(Where $where, Order $order, Limit $limit,Db $db) {
+    public function __construct(Where $where, Order $order, Limit $limit, Db $db) {
         $this->Where = $where;
         $this->Order = $order;
         $this->Limit = $limit;
-         $this->db = $db;
+        $this->db = $db;
     }
 
     /**
@@ -79,12 +79,11 @@ abstract class statement {
      * @param null   $operator
      * @param null   $value
      * @param string $chainType
-     *
      * @return $this
      */
     public function where($column, $operator = null, $value = null, $chainType = 'AND') {
         $this->values[] = $value;
-        $this->Where->where($this->db->identifier($column), $operator, $chainType);
+        $this->Where->where($this->db->name($column), $operator, $chainType);
         return $this;
     }
 
@@ -121,14 +120,11 @@ abstract class statement {
      * @param $column
      * @param null $operator
      * @param null $value
-     *
      * @return $this
      */
     public function orWhere($column, $operator = null, $value = null) {
         $this->values[] = $value;
-
-        $this->Where->orWhere($this->db->identifier($column), $operator);
-
+        $this->Where->orWhere($this->db->name($column), $operator);
         return $this;
     }
 
@@ -136,28 +132,22 @@ abstract class statement {
      * @param $column
      * @param array  $values
      * @param string $chainType
-     *
      * @return $this
      */
     public function whereBetween($column, array $values, $chainType = 'AND') {
         $this->setValues($values);
-
-        $this->Where->whereBetween($this->db->identifier($column), $chainType);
-
+        $this->Where->whereBetween($this->db->name($column), $chainType);
         return $this;
     }
 
     /**
      * @param $column
      * @param array $values
-     *
      * @return $this
      */
     public function orWhereBetween($column, array $values) {
         $this->setValues($values);
-
-        $this->Where->orWhereBetween($this->db->identifier($column));
-
+        $this->Where->orWhereBetween($this->db->name($column));
         return $this;
     }
 
@@ -165,28 +155,22 @@ abstract class statement {
      * @param $column
      * @param array  $values
      * @param string $chainType
-     *
      * @return $this
      */
     public function whereNotBetween($column, array $values, $chainType = 'AND') {
         $this->setValues($values);
-
-        $this->Where->whereNotBetween($this->db->identifier($column), $chainType);
-
+        $this->Where->whereNotBetween($this->db->name($column), $chainType);
         return $this;
     }
 
     /**
      * @param $column
      * @param array $values
-     *
      * @return $this
      */
     public function orWhereNotBetween($column, array $values) {
         $this->setValues($values);
-
-        $this->Where->orWhereNotBetween($this->db->identifier($column));
-
+        $this->Where->orWhereNotBetween($this->db->name($column));
         return $this;
     }
 
@@ -194,32 +178,24 @@ abstract class statement {
      * @param $column
      * @param array  $values
      * @param string $chainType
-     *
      * @return $this
      */
     public function whereIn($column, array $values, $chainType = 'AND') {
         $this->setValues($values);
-
         $this->setPlaceholders($values);
-
-        $this->Where->whereIn($this->db->identifier($column), $this->getPlaceholders(), $chainType);
-
+        $this->Where->whereIn($this->db->name($column), $this->getPlaceholders(), $chainType);
         return $this;
     }
 
     /**
      * @param $column
      * @param array $values
-     *
      * @return $this
      */
     public function orWhereIn($column, array $values) {
         $this->setValues($values);
-
         $this->setPlaceholders($values);
-
-        $this->Where->orWhereIn($this->db->identifier($column), $this->getPlaceholders());
-
+        $this->Where->orWhereIn($this->db->name($column), $this->getPlaceholders());
         return $this;
     }
 
@@ -227,32 +203,24 @@ abstract class statement {
      * @param $column
      * @param array  $values
      * @param string $chainType
-     *
      * @return $this
      */
     public function whereNotIn($column, array $values, $chainType = 'AND') {
         $this->setValues($values);
-
         $this->setPlaceholders($values);
-
-        $this->Where->whereNotIn($this->db->identifier($column), $this->getPlaceholders(), $chainType);
-
+        $this->Where->whereNotIn($this->db->name($column), $this->getPlaceholders(), $chainType);
         return $this;
     }
 
     /**
      * @param $column
      * @param array $values
-     *
      * @return $this
      */
     public function orWhereNotIn($column, array $values) {
         $this->setValues($values);
-
         $this->setPlaceholders($values);
-
-        $this->Where->orWhereNotIn($this->db->identifier($column), $this->getPlaceholders());
-
+        $this->Where->orWhereNotIn($this->db->name($column), $this->getPlaceholders());
         return $this;
     }
 
@@ -260,28 +228,22 @@ abstract class statement {
      * @param $column
      * @param null   $value
      * @param string $chainType
-     *
      * @return $this
      */
     public function whereLike($column, $value = null, $chainType = 'AND') {
         $this->values[] = $value;
-
-        $this->Where->whereLike($this->db->identifier($column), $chainType);
-
+        $this->Where->whereLike($this->db->name($column), $chainType);
         return $this;
     }
 
     /**
      * @param $column
      * @param null $value
-     *
      * @return $this
      */
     public function orWhereLike($column, $value = null) {
         $this->values[] = $value;
-
-        $this->Where->orWhereLike($this->db->identifier($column));
-
+        $this->Where->orWhereLike($this->db->name($column));
         return $this;
     }
 
@@ -289,74 +251,60 @@ abstract class statement {
      * @param $column
      * @param null   $value
      * @param string $chainType
-     *
      * @return $this
      */
     public function whereNotLike($column, $value = null, $chainType = 'AND') {
         $this->values[] = $value;
-
-        $this->Where->whereNotLike($this->db->identifier($column), $chainType);
-
+        $this->Where->whereNotLike($this->db->name($column), $chainType);
         return $this;
     }
 
     /**
      * @param $column
      * @param null $value
-     *
      * @return $this
      */
     public function orWhereNotLike($column, $value = null) {
         $this->values[] = $value;
-
-        $this->Where->orWhereNotLike($this->db->identifier($column));
-
+        $this->Where->orWhereNotLike($this->db->name($column));
         return $this;
     }
 
     /**
      * @param $column
      * @param string $chainType
-     *
      * @return $this
      */
     public function whereNull($column, $chainType = 'AND') {
-        $this->Where->whereNull($this->db->identifier($column), $chainType);
-
+        $this->Where->whereNull($this->db->name($column), $chainType);
         return $this;
     }
 
     /**
      * @param $column
-     *
      * @return $this
      */
     public function orWhereNull($column) {
-        $this->Where->orWhereNull($this->db->identifier($column));
-
+        $this->Where->orWhereNull($this->db->name($column));
         return $this;
     }
 
     /**
      * @param $column
      * @param string $chainType
-     *
      * @return $this
      */
     public function whereNotNull($column, $chainType = 'AND') {
-        $this->Where->whereNotNull($this->db->identifier($column), $chainType);
-
+        $this->Where->whereNotNull($this->db->name($column), $chainType);
         return $this;
     }
 
     /**
      * @param $column
-     *
      * @return $this
      */
     public function orWhereNotNull($column) {
-        $this->Where->orWhereNotNull($this->db->identifier($column));
-
+        $this->Where->orWhereNotNull($this->db->name($column));
         return $this;
     }
 
@@ -364,25 +312,21 @@ abstract class statement {
      * @param $columns
      * @param null   $operator
      * @param string $chainType
-     *
      * @return $this
      */
     public function whereMany($columns, $operator = null, $chainType = 'AND') {
         $this->values = array_merge($this->values, array_values($columns));
         $this->Where->whereMany(array_keys($columns), $operator, $chainType);
-
         return $this;
     }
 
     /**
      * @param $column
      * @param string $direction
-     *
      * @return $this
      */
     public function orderBy($column, $direction = 'ASC') {
-        $this->Order->orderBy($this->db->identifier($column), $direction);
-
+        $this->Order->orderBy($this->db->name($column), $direction);
         return $this;
     }
 
@@ -393,7 +337,6 @@ abstract class statement {
      */
     public function limit($number, $page = null) {
         $this->Limit->limit($number, $page);
-
         return $this;
     }
 
@@ -404,7 +347,6 @@ abstract class statement {
      */
     public function page($limit, $page = null) {
         $this->Limit->limit($limit, 0, $page);
-
         return $this;
     }
 
@@ -418,29 +360,25 @@ abstract class statement {
      * @return $this
      */
     protected function setTable($table) {
-        $this->table = $this->db->identifier($table);
+        $this->table = $this->db->table($table);
         return $this;
     }
 
     /**
      * @param array $columns
-     *
      * @return $this
      */
     protected function setColumns(array $columns) {
         $this->columns = array_merge($this->columns, $columns);
-
         return $this;
     }
 
     /**
      * @param array $values
-     *
      * @return $this
      */
     protected function setValues(array $values) {
         $this->values = array_merge($this->values, $values);
-
         return $this;
     }
 
@@ -449,9 +387,7 @@ abstract class statement {
      */
     protected function getPlaceholders() {
         $placeholders = $this->placeholders;
-
         $this->placeholders = [];
-
         return '( ' . implode(' , ', $placeholders) . ' )';
     }
 
@@ -460,13 +396,12 @@ abstract class statement {
      */
     protected function setPlaceholders(array $values) {
         foreach ($values as $value) {
-            $this->placeholders[] = $this->setPlaceholder('?', is_null($value) ? 1 : sizeof($value));
+            $this->placeholders[] = $this->setPlaceholder('?', !is_array($value) ? 1 : count($value));
         }
     }
 
     /**
      * @param array $array
-     *
      * @return bool
      */
     protected function isAssociative(array $array) {
@@ -477,7 +412,6 @@ abstract class statement {
      * @param $text
      * @param int    $count
      * @param string $separator
-     *
      * @return string
      */
     private function setPlaceholder($text, $count = 0, $separator = ' , ') {

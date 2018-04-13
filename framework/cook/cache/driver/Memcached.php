@@ -70,13 +70,10 @@ class Memcached extends Driver {
         if ($expire instanceof \DateTime) {
             $expire = $expire->getTimestamp() - time();
         }
-        if ($this->tag && !$this->has($name)) {
-            $first = true;
-        }
+       
         $key = $this->filename($name);
-        $expire = 0 == $expire ? 0 : $_SERVER['REQUEST_TIME'] + $expire;
+        $expire = 0 == $expire ? 0 : time() + $expire;
         if ($this->handler->set($key, $value, $expire)) {
-            isset($first) && $this->setTagItem($key);
             return true;
         }
         return false;

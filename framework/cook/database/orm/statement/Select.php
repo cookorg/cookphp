@@ -10,10 +10,11 @@ use cook\database\orm\clause\Having;
 use cook\database\orm\clause\Join;
 use cook\database\orm\clause\Offset;
 use cook\database\Db;
+
 /**
  * 查询类
  */
-class Select extends statement {
+class Select extends Statement {
 
     /**
      * @var bool
@@ -45,8 +46,8 @@ class Select extends statement {
      */
     protected $Offset;
 
-    public function __construct(Where $where, Order $order, Limit $limit,Db $db, Join $join, Group $group, Having $having, Offset $offset) {
-        parent::__construct($where, $order, $limit,$db);
+    public function __construct(Where $where, Order $order, Limit $limit, Db $db, Join $join, Group $group, Having $having, Offset $offset) {
+        parent::__construct($where, $order, $limit, $db);
         $this->Join = $join;
         $this->Group = $group;
         $this->Having = $having;
@@ -79,7 +80,7 @@ class Select extends statement {
      */
     public function count($column = '*', $as = null, $distinct = false) {
         $this->aggregate = true;
-        $this->columns[] = $this->setDistinct($distinct) . ' ' . $this->db->identifier($column) . ' )' . $this->setAs($as);
+        $this->columns[] = $this->setDistinct($distinct) . ' ' . $this->db->name($column) . ' )' . $this->setAs($as);
         return $this;
     }
 
@@ -102,7 +103,7 @@ class Select extends statement {
      */
     public function max($column, $as = null) {
         $this->aggregate = true;
-        $this->columns[] = 'MAX( ' . $this->db->identifier($column) . ' )' . $this->setAs($as);
+        $this->columns[] = 'MAX( ' . $this->db->name($column) . ' )' . $this->setAs($as);
         return $this;
     }
 
@@ -114,7 +115,7 @@ class Select extends statement {
      */
     public function min($column, $as = null) {
         $this->aggregate = true;
-        $this->columns[] = 'MIN( ' . $this->db->identifier($column) . ' )' . $this->setAs($as);
+        $this->columns[] = 'MIN( ' . $this->db->name($column) . ' )' . $this->setAs($as);
         return $this;
     }
 
@@ -126,7 +127,7 @@ class Select extends statement {
      */
     public function avg($column, $as = null) {
         $this->aggregate = true;
-        $this->columns[] = 'AVG( ' . $this->db->identifier($column) . ' )' . $this->setAs($as);
+        $this->columns[] = 'AVG( ' . $this->db->name($column) . ' )' . $this->setAs($as);
         return $this;
     }
 
@@ -138,7 +139,7 @@ class Select extends statement {
      */
     public function sum($column, $as = null) {
         $this->aggregate = true;
-        $this->columns[] = 'SUM( ' . $this->db->identifier($column) . ' )' . $this->setAs($as);
+        $this->columns[] = 'SUM( ' . $this->db->name($column) . ' )' . $this->setAs($as);
         return $this;
     }
 
@@ -152,7 +153,7 @@ class Select extends statement {
      * @return $this
      */
     public function join($table, $first, $operator = null, $second = null, $joinType = 'INNER') {
-        $this->Join->join($table, $first, $operator, $second, $joinType);
+        $this->Join->join($this->db->table($table), $this->db->name($first), $operator, $this->db->name($second), $joinType);
         return $this;
     }
 
@@ -165,7 +166,7 @@ class Select extends statement {
      * @return $this
      */
     public function leftJoin($table, $first, $operator = null, $second = null) {
-        $this->Join->leftJoin($table, $first, $operator, $second);
+        $this->Join->leftJoin($this->db->table($table), $this->db->name($first), $operator, $this->db->name($second));
         return $this;
     }
 
@@ -178,7 +179,7 @@ class Select extends statement {
      * @return $this
      */
     public function rightJoin($table, $first, $operator = null, $second = null) {
-        $this->Join->rightJoin($table, $first, $operator, $second);
+        $this->Join->rightJoin($this->db->table($table), $this->db->name($first), $operator, $this->db->name($second));
         return $this;
     }
 
@@ -191,7 +192,7 @@ class Select extends statement {
      * @return $this
      */
     public function fullJoin($table, $first, $operator = null, $second = null) {
-        $this->Join->fullJoin($table, $first, $operator, $second);
+        $this->Join->fullJoin($this->db->table($table), $this->db->name($first), $operator, $this->db->name($second));
         return $this;
     }
 
@@ -201,7 +202,7 @@ class Select extends statement {
      * @return $this
      */
     public function groupBy($columns) {
-        $this->Group->groupBy($this->db->identifier($columns));
+        $this->Group->groupBy($this->db->name($columns));
         return $this;
     }
 
@@ -215,7 +216,7 @@ class Select extends statement {
      */
     public function having($column, $operator = null, $value = null, $chainType = 'AND') {
         $this->values[] = $value;
-        $this->Having->having($this->db->identifier($column), $operator, $chainType);
+        $this->Having->having($this->db->name($column), $operator, $chainType);
         return $this;
     }
 
@@ -228,7 +229,7 @@ class Select extends statement {
      */
     public function orHaving($column, $operator = null, $value = null) {
         $this->values[] = $value;
-        $this->Having->orHaving($this->db->identifier($column), $operator);
+        $this->Having->orHaving($this->db->name($column), $operator);
         return $this;
     }
 
@@ -241,7 +242,7 @@ class Select extends statement {
      */
     public function havingCount($column, $operator = null, $value = null) {
         $this->values[] = $value;
-        $this->Having->havingCount($this->db->identifier($column), $operator);
+        $this->Having->havingCount($this->db->name($column), $operator);
         return $this;
     }
 
@@ -254,7 +255,7 @@ class Select extends statement {
      */
     public function havingMax($column, $operator = null, $value = null) {
         $this->values[] = $value;
-        $this->Having->havingMax($this->db->identifier($column), $operator);
+        $this->Having->havingMax($this->db->name($column), $operator);
         return $this;
     }
 
@@ -267,7 +268,7 @@ class Select extends statement {
      */
     public function havingMin($column, $operator = null, $value = null) {
         $this->values[] = $value;
-        $this->Having->havingMin($this->db->identifier($column), $operator);
+        $this->Having->havingMin($this->db->name($column), $operator);
         return $this;
     }
 
@@ -280,7 +281,7 @@ class Select extends statement {
      */
     public function havingAvg($column, $operator = null, $value = null) {
         $this->values[] = $value;
-        $this->Having->havingAvg($this->db->identifier($column), $operator);
+        $this->Having->havingAvg($this->db->name($column), $operator);
         return $this;
     }
 
@@ -293,7 +294,7 @@ class Select extends statement {
      */
     public function havingSum($column, $operator = null, $value = null) {
         $this->values[] = $value;
-        $this->Having->havingSum($this->db->identifier($column), $operator);
+        $this->Having->havingSum($this->db->name($column), $operator);
         return $this;
     }
 
@@ -324,6 +325,7 @@ class Select extends statement {
         $sql .= $this->Order;
         $sql .= $this->Limit;
         $sql .= $this->Offset;
+        //echo $sql.PHP_EOL;
         return $sql;
     }
 
@@ -341,7 +343,7 @@ class Select extends statement {
      * @return string
      */
     protected function getColumns() {
-        return $this->db->identifier(implode(' , ', $this->columns ?: ['*']));
+        return $this->db->name($this->columns ?: ['*']);
     }
 
     /**
@@ -365,7 +367,7 @@ class Select extends statement {
         if (empty($as)) {
             return '';
         }
-        return ' AS ' . $this->db->identifier($as);
+        return ' AS ' . $this->db->name($as);
     }
 
     /**
@@ -373,6 +375,7 @@ class Select extends statement {
      * @return \PDOstatement
      */
     public function execute() {
+        //print_r($this->values);        print_r($this->getSql());exit;
         return $this->db->query($this->getSql(), $this->values);
     }
 

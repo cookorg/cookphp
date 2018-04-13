@@ -5,7 +5,7 @@ namespace cook\database\orm\statement;
 /**
  * 更新类
  */
-class Update extends statement {
+class Update extends Statement {
     /**
      * Constructor.
      *
@@ -26,18 +26,14 @@ class Update extends statement {
      */
     public function set(array $pairs) {
         foreach ($pairs as $column => $value) {
-            if (is_array($value) && count($value) === 2) {
-                if (preg_match('/^(\+|\-|\*|\/)$/', $value[0]) && is_numeric($value[1])) {
-                    $this->columns[] = $this->db->identifier($column) . ' = ' . $this->db->identifier($column) . ' ' . $value[0] . ' ?';
-                    $this->values[] = $value[1];
-                    continue;
-                }
+            if (preg_match('/([\w]+)(\[(\+|\-|\*|\/)\])/i', $column, $match) && is_numeric($value)) {
+                $this->columns[] = $this->db->name($match[1]) . ' = ' . $this->db->name($match[1]) . ' ' . $match[3] . ' ?';
+                $this->values[] = $value;
+                continue;
             }
-            $this->columns[] = $this->db->identifier($column) . ' = ?';
+            $this->columns[] = $this->db->name($column) . ' = ?';
             $this->values[] = is_array($value) ? json_encode($value) : $value;
         }
-//        print_r($this->columns);
-//        print_r($this->values);
         return $this;
     }
 
@@ -56,14 +52,16 @@ class Update extends statement {
         $sql .= $this->Where;
         $sql .= $this->Order;
         $sql .= $this->Limit;
+//        echo $sql;
+//        exit;
         return $sql;
     }
 
     /**
-     * @return int
+     * @return \PDOstatement
      */
     public function execute() {
-        return $this->db->exec($this->getSql(), $this->values);
+        return $this->db->exec($this->getSql(), $this->values)->rowCount();
     }
 
     /**

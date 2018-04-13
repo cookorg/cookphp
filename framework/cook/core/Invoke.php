@@ -6,6 +6,8 @@ use ReflectionClass;
 use ReflectionFunction;
 use cook\core\Container as DI;
 use cook\http\Input;
+use cook\http\Request;
+use cook\core\View;
 
 /**
  * 执行函数、类
@@ -19,8 +21,20 @@ class Invoke {
      */
     protected $input;
 
-    public function __construct(Input $input) {
+    /**
+     * 视图模板
+     * @var View
+     */
+    protected $view;
+
+    /**
+     * @var Request 
+     */
+    public $request;
+
+    public function __construct(Input $input, Request $request) {
         $this->input = $input;
+        $this->request = $request;
     }
 
     /**
@@ -31,6 +45,7 @@ class Invoke {
      * @return mixed
      */
     public function method($className, $name, array $parameters = []) {
+
         $class = new ReflectionClass($className);
         $construct = $class->getConstructor();
         if ($construct) {
@@ -42,7 +57,6 @@ class Invoke {
         } else {
             $object = $class->newInstance();
         }
-
         $method = $class->getmethod($name);
         if ($method->isPublic() && !$method->isStatic()) {
             if ($method->getNumberOfParameters() > 0) {
@@ -50,11 +64,13 @@ class Invoke {
                 foreach ($method->getParameters() as $value) {
                     $args[] = is_object($value->getClass()) ? DI::get($value->getClass()->getName(), $method->class) : (array_shift($parameters) ?: ($value->isDefaultValueAvailable() ? $value->getDefaultValue() : $this->input->param($value->getName())));
                 }
-                return $method->invokeArgs($object, $args);
+                $method->invokeArgs($object, $args);
             } else {
-                return $method->invoke($object);
+                $method->invoke($object);
             }
         }
+        $this->view = DI::get(View::class);
+        !empty($this->view->isTemplate()) ? $this->view->assign($object->data ?? null)->display() : $this->view->displayJson($object->data ?? null);
     }
 
     /**
@@ -68,7 +84,7 @@ class Invoke {
         if ($function->getNumberOfParameters() > 0) {
             $args = [];
             foreach ($function->getParameters() as $value) {
-                $args[] = is_object($value->getClass()) ? DI::get($value->getClass()->getName()) : ($parameters ?: ($value->isDefaultValueAvailable() ? $value->getDefaultValue() : $this->input->param($value->getName())));
+                $args[] = is_object($value->getClass()) ? DI::get($value->getClass()->getName()) : (array_shift($parameters) ?: ($value->isDefaultValueAvailable() ? $value->getDefaultValue() : $this->input->param($value->getName())));
             }
             return $function->invokeArgs($args);
         } else {

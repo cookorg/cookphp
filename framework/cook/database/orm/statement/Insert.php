@@ -5,7 +5,7 @@ namespace cook\database\orm\statement;
 /**
  * 新增类
  */
-class Insert extends statement {
+class Insert extends Statement {
 
     /**
      * @var bool
@@ -61,7 +61,7 @@ class Insert extends statement {
      */
     public function columns(array $columns) {
         for ($index = 0; $index < count($columns); $index++) {
-            $columns[$index] = $this->db->identifier($columns[$index]);
+            $columns[$index] = $this->db->name($columns[$index]);
         }
         $this->setColumns($columns);
         return $this;
@@ -95,18 +95,17 @@ class Insert extends statement {
         $sql = ($this->replace ? 'REPLACE INTO ' : 'INSERT INTO ') . $this->table;
         $sql .= ' ' . $this->getColumns();
         $sql .= ' VALUES ' . $this->getPlaceholders();
-
         return $sql;
     }
 
     /**
      * @param bool $insertId
      *
-     * @return string
+     * @return \PDOstatement
      */
     public function execute($insertId = true) {
         $exec = $this->db->exec($this->getSql(), $this->values);
-        return $insertId && !$this->replace ? $this->db->lastInsertId() : $exec;
+        return $insertId && $exec && !$this->replace ? $this->db->lastInsertId() : $exec->rowCount();
     }
 
     /**

@@ -43,7 +43,7 @@ class Db {
      * 错误
      * @var array
      */
-    public $errorinfo = null;
+    public $errorinfo = [];
 
     /**
      * 写入服务器
@@ -221,13 +221,12 @@ class Db {
      * 返回受影响的行数
      * @param string $statement SQL语句
      * @param string $parameters 绑定的参数
-     * @return int
+     * @return \PDOStatement|int
      */
-    public function exec(string $statement, array $parameters = []): int {
-        //自动启动事务
-        !$this->inTransaction() && $this->beginTransaction();
+    public function exec(string $statement, array $parameters = []) {
+
         $sth = $this->prepareExecute($statement, $parameters);
-        return $sth instanceof PDOStatement ? $sth->rowCount() : 0;
+        return $sth instanceof PDOStatement ? $sth : 0;
     }
 
     /**
@@ -241,21 +240,30 @@ class Db {
      * @throws Exception
      */
     public function prepareExecute(string $statement, array $parameters = []) {
-        $pdo = $this->isWriteType($statement) ? $this->linkWrite : $this->linkRead;
+        if ($this->isWriteType($statement)) {
+            //自动启动事务
+            !$this->inTransaction() && $this->beginTransaction();
+            $pdo = $this->linkWrite;
+        } else {
+            $pdo = $this->linkRead;
+        }
+
         $start = microtime(true);
         $sth = $pdo->prepare($statement);
+        //echo $statement . PHP_EOL;
+        $sth !== false && $sth->execute($parameters);
+        $this->setPrepareLog($start, microtime(true), $statement);
         if ($pdo->errorCode() === PDO::ERR_NONE) {
-            if ($sth->execute($parameters) !== false) {
-                $this->setPrepareLog($start, $statement);
-                return $sth;
-            }
-            $this->inTransaction() && $this->rollBack();
+            return $sth;
         } else {
-            $this->errorinfo = ['code' => $pdo->errorCode(), 'message' => $pdo->errorInfo()[2]];
-            //print_r($this->errorinfo);exit;
+            $this->errorinfo[] = ['code' => $pdo->errorCode(), 'message' => $pdo->errorInfo()[2]];
+            $this->inTransaction() && $this->rollBack();
         }
-        return false;
+
+        print_r($this->errorinfo);exit;
         //$sth->debugDumpParams();
+
+        return false;
     }
 
     /**
@@ -274,16 +282,16 @@ class Db {
      * @param string|array $string
      * @return string
      */
-    public function identifier($string) {
+    public function table($string) {
         if (!is_array($string)) {
             $string = preg_split('/\s*,\s*/', trim($string), -1, PREG_SPLIT_NO_EMPTY);
         }
         $strings = [];
         foreach ($string as $value) {
             if (preg_match('/(.*) AS (.*)/i', $value, $matches)) {
-                $strings[] = $this->name($matches[1]) . ' AS ' . $this->name($matches[2]);
+                $strings[] = $this->name($this->dbprefix . $matches[1]) . ' AS ' . $this->name($matches[2]);
             } else {
-                $strings[] = $this->name($value);
+                $strings[] = $this->name($this->dbprefix . $value);
             }
         }
         return implode(',', $strings);
@@ -295,16 +303,24 @@ class Db {
      * @return string
      */
     public function name($string): string {
-        if (preg_match('/^[A-Za-z\-\_]+$/', $string) && stristr($string, '*') === false) {
-            $string = $this->identifier && strlen($this->identifier) === 2 ? $this->identifier[0] . trim($string) . $this->identifier[1] : trim($string);
-        } else {
-            $string = trim($string);
+        if (!is_array($string)) {
+            $string = preg_split('/\s*,\s*/', trim($string), -1, PREG_SPLIT_NO_EMPTY);
         }
-        return $string;
+        $strings = [];
+        foreach ($string as $value) {
+            if (preg_match('/^[A-Za-z\-\_]+$/', $value) && stristr($value, '*') === false) {
+                $strings[] = $this->identifier && strlen($this->identifier) === 2 ? $this->identifier[0] . trim($value) . $this->identifier[1] : trim($value);
+            } elseif (preg_match('/(.*)\.(.*)/i', $value, $matches)) {
+                $strings[] = $this->identifier && strlen($this->identifier) === 2 ? $this->identifier[0] . trim($matches[1]) . $this->identifier[1] . '.' . (stristr($matches[2], '*') === false?$this->identifier[0] . trim($matches[2]) . $this->identifier[1]:trim($matches[2])) : trim($value);
+            } else {
+                $strings[] = trim($value);
+            }
+        }
+        return implode(',', $strings);
     }
 
-    private function setPrepareLog($start, $message) {
-        $this->logging && $this->log->sql('[SQL]' . number_format(microtime(true) - $start, 6) . ' ' . $message);
+    private function setPrepareLog($start, $end, $message) {
+        $this->logging && $this->log->sql('[SQL]' . number_format($end - $start, 6) . ' ' . $message);
     }
 
     public function __destruct() {

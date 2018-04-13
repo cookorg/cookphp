@@ -28,11 +28,6 @@ class Log {
     private $handler = null;
 
     /**
-     * @var array
-     */
-    private $logs = [];
-
-    /**
      * 应用配置
      * @var Config
      */
@@ -152,17 +147,8 @@ class Log {
      * @param string $message
      */
     public function setLogger($level, $message) {
-        $this->logs[$level] = $message;
-    }
-
-    /**
-     * 写入日志
-     */
-    public function write() {
         !$this->handler && $this->connect();
-        foreach ($this->logs as $level => $message) {
-            $this->handler->write($level, $message);
-        }
+        $this->handler->write($level, $message);
     }
 
     /**
@@ -188,10 +174,6 @@ class Log {
             }
         }
         return strtr($message, $replace);
-    }
-
-    public function __destruct() {
-        $this->write();
     }
 
 }

@@ -47,9 +47,7 @@ class File extends Driver {
     }
 
     public function set($name, $value, $expire = null) {
-        if (is_null($expire)) {
-            $expire = intval($this->configBase['expire']) + time();
-        }
+        $expire = intval($expire ?: $this->configBase['expire']) + time();
         $filename = $this->filename($name);
         $dir = dirname($filename);
         return $this->path->mkDir($dir) && is_writable($dir) && file_put_contents($filename, "<?php\n//" . sprintf('%012d', $expire) . "\n exit();?>\n" . serialize($value)) ? true : false;
@@ -77,7 +75,7 @@ class File extends Driver {
     }
 
     private function getPath() {
-        return rtrim($this->config->get('caching.path') ?: WRITEPATH . 'Caching', '/\\');
+        return rtrim($this->config->get('caching.path') ?: WRITEPATH . 'caching', '/\\');
     }
 
     protected function filename(string $name): string {

@@ -17,7 +17,7 @@ class Input {
 
     public function __construct(Request $request) {
         $this->request = $request;
-        parse_str(file_get_contents('php://input'), $this->input);
+        $this->input = file_get_contents('php://input');
     }
 
     /**
@@ -39,10 +39,9 @@ class Input {
      * @return mixed
      */
     public function post(string $key = null, string $filter = null) {
-        if (empty($_POST) && $this->request->isContentType('json')) {
-            $_POST = $this->input;
-        }
-        return is_null($key) ? $this->varFilter($_POST, $filter) : $this->varFilter($_POST[$key] ?? null, $filter);
+        static $_input = null;
+        !empty($_input) || ($_input = $this->request->isContentType('json') ? json_decode($this->input, true) : $_POST);
+        return is_null($key) ? $this->varFilter($_input, $filter) : $this->varFilter($_input[$key] ?? null, $filter);
     }
 
     /**
@@ -53,7 +52,9 @@ class Input {
      * @return mixed
      */
     public function put(string $key = null, string $filter = null) {
-        return is_null($key) ? $this->varFilter($this->input, $filter) : $this->varFilter($this->input[$key] ?? null, $filter);
+        static $_input = null;
+        !empty($_input) || parse_str($this->input, $_input);
+        return is_null($key) ? $this->varFilter($_input, $filter) : $this->varFilter($_input[$key] ?? null, $filter);
     }
 
     /**
@@ -64,7 +65,9 @@ class Input {
      * @return mixed
      */
     public function delete(string $key = null, string $filter = null) {
-        return is_null($key) ? $this->varFilter($this->input, $filter) : $this->varFilter($this->input[$key] ?? null, $filter);
+        static $_input = null;
+        !empty($_input) || parse_str($this->input, $_input);
+        return is_null($key) ? $this->varFilter($_input, $filter) : $this->varFilter($_input[$key] ?? null, $filter);
     }
 
     /**
@@ -112,17 +115,27 @@ class Input {
     }
 
     /**
+     * 获取上传文件
+     * @access public
+     * @param string|null $key 名称 为空时返回所有
+     * @return mixed
+     */
+    public function files(string $key = null) {
+        return is_null($key) ? $_FILES : ($_FILES[$key] ?? null);
+    }
+
+    /**
      * 参数过滤方法
      * @access public
      * @param string|array $content 过滤内容
      * @param string $filter 过滤方法
      * @return mixed
      */
-    public function varFilter($content, string $filter = null) {
+    public function varFilter($content, $filter = 'htmlspecialchars') {
         if (empty($content)) {
             return $content;
         }
-        return is_array($content) ? array_map(function ($a) use (&$filter ) {
+        return is_array($content) ? array_map(function ($a) use ($filter ) {
                     return $this->varFilter($a, $filter);
                 }, $content) : trim($filter ? $filter($content) : $content);
     }

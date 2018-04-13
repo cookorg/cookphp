@@ -65,10 +65,6 @@ class View {
         $this->app = $app;
         $this->path = $path;
         $this->output = $output;
-        $this->initialize();
-    }
-
-    private function initialize() {
         $this->left = $this->app->config->view['left'] ?? '{';
         $this->right = $this->app->config->view['right'] ?? '}';
         $this->tplsuffix = $this->app->config->view['tplsuffix'] ?? '.tpl';
@@ -82,6 +78,7 @@ class View {
         $this->theme = $this->app->config->view['theme'] ?? '';
         $this->setCompileDir(WRITEPATH . 'view' . DS . 'compile');
     }
+
 
     /**
      * 渲染模板
@@ -123,13 +120,32 @@ class View {
     }
 
     /**
+     * 输出JSON内容
+     * @param mixed $data 赋值
+     * @return string
+     */
+    public function displayJson($data = null) {
+        $this->output->setJson($data)->display();
+    }
+
+    /**
+     * 检测模板是否存
+     * @param string $template 模板
+     * @return bool
+     */
+    public function isTemplate(&$template = null) {
+        !empty($template) || ($template = strtolower(trim(substr($this->app->router->route['controller'], strlen(APPNAMESPACE) + 11) . DS . $this->app->router->route['action'], '/\\')));
+        $template=$this->getTemplateFile($template);
+        return $template;
+    }
+
+    /**
      * 取得输出内容
      * @param string $template 模板
      * @return string
      */
     public function fetch($template = null) {
-        !empty($template) || ($template = strtolower(trim(substr($this->app->router->route['controller'], strlen(APPNAMESPACE) + 11) . DS . $this->app->router->route['action'], '/\\')));
-        $this->getTemplateFile($template);
+        $this->isTemplate($template);
         if (empty($template)) {
             return;
         }
@@ -188,7 +204,7 @@ class View {
      */
     private function getTemplateFile(&$template) {
         $template .= pathinfo($template, PATHINFO_EXTENSION) ? '' : $this->tplsuffix;
-        $template = realpath(APPPATH . 'view' . DS . $template);
+        $template = realpath(str_replace(['/', '\\'], DS,APPPATH . 'view' . DS . $template));
         return $template;
     }
 
