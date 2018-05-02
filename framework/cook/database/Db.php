@@ -260,7 +260,8 @@ class Db {
             $this->inTransaction() && $this->rollBack();
         }
 
-        print_r($this->errorinfo);exit;
+        print_r($this->errorinfo);
+        exit;
         //$sth->debugDumpParams();
 
         return false;
@@ -288,8 +289,8 @@ class Db {
         }
         $strings = [];
         foreach ($string as $value) {
-            if (preg_match('/(.*) AS (.*)/i', $value, $matches)) {
-                $strings[] = $this->name($this->dbprefix . $matches[1]) . ' AS ' . $this->name($matches[2]);
+            if (preg_match('/(.*) AS (.*)/i', $value, $match)) {
+                $strings[] = $this->name($this->dbprefix . $match[1]) . ' AS ' . $this->name($match[2]);
             } else {
                 $strings[] = $this->name($this->dbprefix . $value);
             }
@@ -303,20 +304,26 @@ class Db {
      * @return string
      */
     public function name($string): string {
-        if (!is_array($string)) {
-            $string = preg_split('/\s*,\s*/', trim($string), -1, PREG_SPLIT_NO_EMPTY);
-        }
-        $strings = [];
-        foreach ($string as $value) {
-            if (preg_match('/^[A-Za-z\-\_]+$/', $value) && stristr($value, '*') === false) {
-                $strings[] = $this->identifier && strlen($this->identifier) === 2 ? $this->identifier[0] . trim($value) . $this->identifier[1] : trim($value);
-            } elseif (preg_match('/(.*)\.(.*)/i', $value, $matches)) {
-                $strings[] = $this->identifier && strlen($this->identifier) === 2 ? $this->identifier[0] . trim($matches[1]) . $this->identifier[1] . '.' . (stristr($matches[2], '*') === false?$this->identifier[0] . trim($matches[2]) . $this->identifier[1]:trim($matches[2])) : trim($value);
-            } else {
-                $strings[] = trim($value);
+        if ('*' == $string || empty($string)) {
+            return '*';
+        } else {
+            if (!is_array($string)) {
+                $string = preg_split('/\s*,\s*/', trim($string), -1, PREG_SPLIT_NO_EMPTY);
             }
+            $strings = [];
+            foreach ($string as $value) {
+                if (preg_match('/^(.*?)\s+AS\s+(\w+)$/im', $value, $match)) {
+                    $strings[] = (strpos($match[1], '(') !== false ? $match[1] : $this->name($match[1])) . ' AS ' . $this->name($match[2]);
+                } elseif (preg_match('/^\w+$/', $value) && stristr($value, '*') === false) {
+                    $strings[] = $this->identifier && strlen($this->identifier) === 2 ? $this->identifier[0] . trim($value) . $this->identifier[1] : trim($value);
+                } elseif (preg_match('/(.*)\.(.*)/i', $value, $match)) {
+                    $strings[] = $this->name($match[1]) . '.' . $this->name($match[2]);
+                } else {
+                    $strings[] = trim($value);
+                }
+            }
+            return implode(',', $strings);
         }
-        return implode(',', $strings);
     }
 
     private function setPrepareLog($start, $end, $message) {
