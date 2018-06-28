@@ -6,5 +6,5 @@
 return[
     'driver' => 'File',
     'prefix' => md5(APPPATH),
-    'expire' => 3600
+    'expire' => 300
 ];

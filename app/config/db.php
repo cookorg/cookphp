@@ -6,7 +6,7 @@
 return[
     //是否读写分离
     //为false是读取服务器做为主服务器
-    'separate' => true,
+    'separate' => false,
     //表前缀
     'dbprefix' => 'c_',
     //字段标识
@@ -19,7 +19,7 @@ return[
     'read' => [
         [
             //数据源名称
-            'dsn' => 'mysql:host=192.168.0.101;port=3306;dbname=cookphp;charset=utf8mb4',
+            'dsn' => 'mysql:host=192.168.0.101;port=3306;dbname=ssl;charset=utf8mb4',
             //账号
             'username' => 'root',
             //密码
@@ -30,7 +30,7 @@ return[
     'write' => [
         [
             //数据源名称
-            'dsn' => 'mysql:host=192.168.0.101;port=3306;dbname=cookphp;charset=utf8mb4',
+            'dsn' => 'mysql:host=192.168.0.101;port=3306;dbname=ssl;charset=utf8mb4',
             //账号
             'username' => 'root',
             //密码
