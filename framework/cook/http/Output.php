@@ -3,7 +3,9 @@
 namespace cook\http;
 
 use cook\http\StatusCode;
-use cook\core\App;
+use cook\core\Benchmark;
+use cook\core\Config;
+use cook\http\Request;
 
 /**
  * 输出类
@@ -15,98 +17,79 @@ class Output implements StatusCode {
      * 输出内容
      * @var string
      */
-    private $output;
+    private static $output;
 
     /**
      * header
      * @var array
      */
-    public $headers = [];
-
-    /**
-     * App
-     * @var App
-     */
-    public $app;
-
-    public function __construct(App $app) {
-        $this->app = $app;
-    }
+    public static $headers = [];
 
     /**
      * 输出为JSON字符
      * @param mixed $value
-     * @return $this
      */
-    public function setJson($value) {
-        $this->output = json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        $this->setContentType('json');
-        return $this;
+    public static function setJson($value) {
+        self::$output = json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        self::setContentType('json');
     }
 
     /**
      * 获取输出
      * @return	string
      */
-    public function getOutput() {
-        return $this->output;
+    public static function getOutput() {
+        return self::$output;
     }
 
     /**
      * 设置输出
      * @param	string	$output
-     * @return	$this
      */
-    public function setOutput($output) {
-        $this->output = $output;
-        return $this;
+    public static function setOutput($output) {
+        self::$output = $output;
     }
 
     /**
      * 附加输出
      * @param	string	$output
-     * @return	$this
      */
-    public function appendOutput($output) {
-        $this->output .= $output;
-        return $this;
+    public static function appendOutput($output) {
+        self::$output .= $output;
     }
 
     /**
      * 设置Header
      * @param	string	$header
-     * @return	$this
      */
-    public function setHeader($header) {
-        $this->headers[] = $header;
-        return $this;
+    public static function setHeader($header) {
+        self::$headers[] = $header;
     }
 
     /**
      * 获取Header
      * @return	array
      */
-    public function getHeader() {
-        return $this->headers;
+    public static function getHeader() {
+        return self::$headers;
     }
 
     /**
      * 设置Header Content-Type
      * @param	string	$mimeType
      * @param	string	$charset
-     * @return	$this
      */
-    public function setContentType($mimeType, $charset = 'UTF-8') {
-        return $this->setHeader('Content-Type: ' . (is_array(($mimeType = $this->app->config->mimes[$mimeType] ?? $this->app->config->mimes['html'])) ? current($mimeType) : $mimeType) . (empty($charset) ? '' : '; charset=' . $charset));
+    public static function setContentType($mimeType, $charset = 'UTF-8') {
+        return self::setHeader('Content-Type: ' . (is_array(($mimeType = Config::get('mimes.' . $mimeType) ?: Config::get('mimes.html'))) ? current($mimeType) : $mimeType) . (empty($charset) ? '' : '; charset=' . $charset));
     }
 
     /**
      * 获取Content-Type Header
      * @return string
      */
-    public function getContentType() {
-        for ($i = 0, $c = count($this->headers); $i < $c; $i++) {
-            if (sscanf($this->headers[$i], 'Content-Type: %[^;]', $contentType) === 1) {
+    public static function getContentType() {
+        for ($i = 0, $c = count(self::$headers); $i < $c; $i++) {
+            if (sscanf(self::$headers[$i], 'Content-Type: %[^;]', $contentType) === 1) {
                 return $contentType;
             }
         }
@@ -117,15 +100,13 @@ class Output implements StatusCode {
      * 设置Header状态
      * @param int $code
      * @param string $text
-     * @return	$this
      */
-    public function setStatusHeader($code = 200, $text = '') {
-        if (!$this->app->request->isCli()) {
+    public static function setStatusHeader($code = 200, $text = '') {
+        if (!Request::isCli()) {
             $code = intval($code);
             !empty($text) || ($text = self::HTTP_CODE_TEXT[$code] ?? self::HTTP_CODE_TEXT[self::STATUS_INTERNAL_SERVER_ERROR]);
-            $this->app->request->isCgi() ? header('Status: ' . $code . ' ' . $text, true) : header(($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1') . ' ' . $code . ' ' . $text, true, $code);
+            Request::isCgi() ? header('Status: ' . $code . ' ' . $text, true) : header(($_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1') . ' ' . $code . ' ' . $text, true, $code);
         }
-        return $this;
     }
 
     /**
@@ -133,10 +114,10 @@ class Output implements StatusCode {
      * @param	string	$output
      * @return	void
      */
-    public function display($output = '') {
-        !empty($output) || ($output = $this->output);
-        $output = str_replace(['{elapsed_time}', '{memory_usage}'], [$this->app->benchmark->elapsedTime('start_time'), $this->app->benchmark->elapsedMemory('start_memory')], $output);
-        foreach ($this->headers as $header) {
+    public static function display($output = '') {
+        !empty($output) || ($output = self::$output);
+        $output = str_replace(['{elapsed_time}', '{memory_usage}'], [Benchmark::elapsedTime('start_time'), Benchmark::elapsedMemory('start_memory')], $output);
+        foreach (self::$headers as $header) {
             header($header, true);
         }
 //        if (strpos($_SERVER['HTTP_ACCEPT_ENCODING'] ?? '', 'gzip') !== false) {

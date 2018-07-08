@@ -12,28 +12,26 @@ class Autoloader {
      * 命名空间
      * @var array
      */
-    protected $prefixes = [];
-
-    public function __construct() {
-        spl_autoload_register([$this, 'loader'], true, true);
-    }
+    protected static $prefixes = [];
+    private static $autoload = false;
 
     /**
      * 自动加载
      * @param array $autoloader
      */
-    public function register(...$autoloader) {
+    public static function register(...$autoloader) {
+        !self::$autoload && spl_autoload_register('self::loader', true, true);
+        self::$autoload = true;
         array_map(function($autoloader) {
             if (is_string($autoloader)) {
-                $autoloader = $this->requireFile($autoloader, true);
+                $autoloader = self::requireFile($autoloader, true);
             }
             if (is_array($autoloader)) {
                 foreach ($autoloader as $key => $value) {
-                    $this->addNamespace($key, $value);
+                    self::addNamespace($key, $value);
                 }
             }
         }, $autoloader);
-        return $this;
     }
 
     /**
@@ -42,17 +40,16 @@ class Autoloader {
      * @param string $baseDir 类文件的基本目录
      * @param bool $prepend true最先搜索到否则最后
      */
-    public function addNamespace($prefix, $baseDir, $prepend = false) {
+    public static function addNamespace($prefix, $baseDir, $prepend = false) {
         $prefix = trim($prefix, '\\') . '\\';
         $baseDir = str_replace(['/', '\\'], DS, rtrim($baseDir, '/\\') . DS);
         if ($baseDir !== false) {
-            if (isset($this->prefixes[$prefix])) {
-                $prepend ? array_unshift($this->prefixes[$prefix], $baseDir) : array_push($this->prefixes[$prefix], $baseDir);
+            if (isset(self::$prefixes[$prefix])) {
+                $prepend ? array_unshift(self::$prefixes[$prefix], $baseDir) : array_push(self::$prefixes[$prefix], $baseDir);
             } else {
-                $this->prefixes[$prefix][] = $baseDir;
+                self::$prefixes[$prefix][] = $baseDir;
             }
         }
-        return $this;
     }
 
     /**
@@ -60,8 +57,8 @@ class Autoloader {
      * @param string $prefix 命名空间前缀 null时返回所有
      * @return mixed
      */
-    public function getLocalNamespace($prefix = null) {
-        return $prefix === null ? $this->prefixes : $this->prefixes[$prefix] ?? null;
+    public static function getLocalNamespace($prefix = null) {
+        return $prefix === null ? self::$prefixes : self::$prefixes[$prefix] ?? null;
     }
 
     /**
@@ -69,12 +66,12 @@ class Autoloader {
      * @param string $class 类名称
      * @return bool
      */
-    public function loader($class) {
+    public static function loader($class) {
         $prefix = $class;
         while (false !== $pos = strrpos($prefix, '\\')) {
             $prefix = substr($class, 0, $pos + 1);
             $relativeClass = substr($class, $pos + 1);
-            if ($this->loadMappedFile($prefix, $relativeClass)) {
+            if (self::loadMappedFile($prefix, $relativeClass)) {
                 return true;
             } else {
                 $prefix = rtrim($prefix, '/\\');
@@ -89,10 +86,10 @@ class Autoloader {
      * @param string $filename 相对类
      * @return bool
      */
-    public function loadMappedFile($prefix, $filename) {
-        if (isset($this->prefixes[$prefix])) {
-            foreach ($this->prefixes[$prefix] as $baseDir) {
-                if ($this->requireFile($baseDir . $filename . '.php')) {
+    public static function loadMappedFile($prefix, $filename) {
+        if (isset(self::$prefixes[$prefix])) {
+            foreach (self::$prefixes[$prefix] as $baseDir) {
+                if (self::requireFile($baseDir . $filename . '.php')) {
                     return true;
                 }
             }
@@ -106,7 +103,7 @@ class Autoloader {
      * @param bool $return 是否返回加载文件
      * @return bool
      */
-    public function requireFile($filename, $return = false) {
+    public static function requireFile($filename, $return = false) {
         $file = str_replace(['/', '\\'], DS, $filename);
         if (is_readable($file)) {
             if ($return) {

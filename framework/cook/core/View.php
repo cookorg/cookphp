@@ -5,6 +5,8 @@ namespace cook\core;
 use cook\core\App;
 use library\Path;
 use cook\http\Output;
+use cook\core\Config;
+use cook\router\Router;
 
 /**
  * 视图模板
@@ -43,42 +45,21 @@ class View {
     // 模板变量
     private $_assign = [];
 
-    /**
-     * 路由线路
-     * @var App
-     */
-    protected $app;
-
-    /**
-     * 路径处理类
-     * @var Path
-     */
-    protected $path;
-
-    /**
-     * 输出类
-     * @var Output
-     */
-    public $output;
-
-    public function __construct(App $app, Path $path, Output $output) {
-        $this->app = $app;
-        $this->path = $path;
-        $this->output = $output;
-        $this->left = $this->app->config->view['left'] ?? '{';
-        $this->right = $this->app->config->view['right'] ?? '}';
-        $this->tplsuffix = $this->app->config->view['tplsuffix'] ?? '.tpl';
-        $this->mimetype = $this->app->config->view['mimetype'] ?? 'html';
-        $this->compilesuffix = $this->app->config->view['compilesuffix'] ?? '.php';
-        $this->php = $this->app->config->view['php'] ?? false;
-        $this->compresshtml = $this->app->config->view['compresshtml'] ?? false;
-        $this->layout = $this->app->config->view['layout'] ?? false;
-        $this->layoutname = $this->app->config->view['layoutname'] ?? 'Public/layout';
-        $this->layoutitem = $this->app->config->view['layoutitem'] ?? '{__REPLACE__}';
-        $this->theme = $this->app->config->view['theme'] ?? '';
+    public function __construct() {
+        $config = Config::get('view');
+        $this->left = $config['left'] ?? '{';
+        $this->right = $config['right'] ?? '}';
+        $this->tplsuffix = $config['tplsuffix'] ?? '.tpl';
+        $this->mimetype = $config['mimetype'] ?? 'html';
+        $this->compilesuffix = $config['compilesuffix'] ?? '.php';
+        $this->php = $config['php'] ?? false;
+        $this->compresshtml = $config['compresshtml'] ?? false;
+        $this->layout = $config['layout'] ?? false;
+        $this->layoutname = $config['layoutname'] ?? 'Public/layout';
+        $this->layoutitem = $config['layoutitem'] ?? '{__REPLACE__}';
+        $this->theme = $config['theme'] ?? '';
         $this->setCompileDir(WRITEPATH . 'view' . DS . 'compile');
     }
-
 
     /**
      * 渲染模板
@@ -116,7 +97,8 @@ class View {
      * @return string
      */
     public function display($template = null) {
-        $this->output->setContentType($this->mimetype)->display($this->fetch($template));
+        Output::setContentType($this->mimetype);
+        Output::display($this->fetch($template));
     }
 
     /**
@@ -125,7 +107,8 @@ class View {
      * @return string
      */
     public function displayJson($data = null) {
-        $this->output->setJson($data)->display();
+        Output::setJson($data);
+        Output::display();
     }
 
     /**
@@ -134,8 +117,8 @@ class View {
      * @return bool
      */
     public function isTemplate(&$template = null) {
-        !empty($template) || ($template = strtolower(trim(substr($this->app->router->route['controller'], strlen(APPNAMESPACE) + 11) . DS . $this->app->router->route['action'], '/\\')));
-        $template=$this->getTemplateFile($template);
+        !empty($template) || ($template = strtolower(trim(substr(Router::$route['controller'], strlen(APPNAMESPACE) + 11) . DS . Router::$route['action'], '/\\')));
+        $template = $this->getTemplateFile($template);
         return $template;
     }
 
@@ -194,7 +177,7 @@ class View {
      * @return bool
      */
     public function clear() {
-        return $this->path->clearDir($this->compiledir);
+        return Path::clearDir($this->compiledir);
     }
 
     /**
@@ -204,7 +187,7 @@ class View {
      */
     private function getTemplateFile(&$template) {
         $template .= pathinfo($template, PATHINFO_EXTENSION) ? '' : $this->tplsuffix;
-        $template = realpath(str_replace(['/', '\\'], DS,APPPATH . 'view' . DS . $template));
+        $template = realpath(str_replace(['/', '\\'], DS, APPPATH . 'view' . DS . $template));
         return $template;
     }
 
@@ -214,7 +197,7 @@ class View {
      * @return string
      */
     private function replaceTemplate(&$template) {
-        $template = $this->path->replace($template);
+        $template = Path::replace($template);
         return $template;
     }
 
@@ -267,7 +250,7 @@ class View {
                     $this->compileCode($content);
                     $this->compresshtml && $this->compressHtml($content);
                 }
-                $this->path->mkDir(($dir = dirname($compileFile))) && $this->path->isWritable($dir) && file_put_contents($compileFile, "<?php\n//" . ($md5 ?? md5($content)) . "\n?>" . $content);
+                Path::mkDir(($dir = dirname($compileFile))) && Path::isWritable($dir) && file_put_contents($compileFile, "<?php\n//" . ($md5 ?? md5($content)) . "\n?>" . $content);
             }
         }
     }
@@ -277,7 +260,7 @@ class View {
      * @return bool
      */
     public function clearCompile() {
-        return $this->path->clearDir(rtrim($this->compiledir, '/\\'));
+        return Path::clearDir(rtrim($this->compiledir, '/\\'));
     }
 
     /**

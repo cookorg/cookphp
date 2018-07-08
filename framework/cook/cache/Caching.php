@@ -15,24 +15,13 @@ class Caching {
     /**
      * @var Driver
      */
-    public $handler = null;
-
-    /**
-     * 配制
-     * @var Config
-     */
-    public $config;
-
-    public function __construct(Config $config) {
-        $this->config = $config;
-        $this->initialize();
-    }
+    public static $handler = null;
 
     /**
      * 处理环境设置
      */
-    protected function initialize() {
-        $this->handler = $this->start();
+    protected static function initialize() {
+        return self::$handler ?: (self::$handler = self::start());
     }
 
     /**
@@ -40,8 +29,8 @@ class Caching {
      * @param string $driver 驱动
      * @return Driver
      */
-    public function start($driver = null) {
-        $handler = DI::get('cook\\cache\\driver\\' . ucwords($driver ?: ($this->config->caching['driver'] ?? 'File')));
+    public static function start($driver = null) {
+        $handler = DI::get('cook\\cache\\driver\\' . ucwords($driver ?: (Config::get('caching.driver') ?: 'File')));
         if ($handler instanceof Driver && $handler->enabled()) {
             return $handler;
         } else {
@@ -54,8 +43,8 @@ class Caching {
      * @param string $name 缓存变量名
      * @return bool
      */
-    public function has($name) {
-        return $this->handler->has($name);
+    public static function has($name) {
+        return self::initialize()->has($name);
     }
 
     /**
@@ -64,8 +53,8 @@ class Caching {
      * @param mixed  $default 默认值
      * @return mixed
      */
-    public function get($name, $default = null) {
-        return $this->handler->get($name, $default);
+    public static function get($name, $default = null) {
+        return self::initialize()->get($name, $default);
     }
 
     /**
@@ -75,8 +64,8 @@ class Caching {
      * @param int       $expire  有效时间 0为永久
      * @return bool
      */
-    public function set($name, $value, $expire = null) {
-        return $this->handler->set($name, $value, $expire);
+    public static function set($name, $value, $expire = null) {
+        return self::initialize()->set($name, $value, $expire);
     }
 
     /**
@@ -85,8 +74,8 @@ class Caching {
      * @param int       $step 步长
      * @return false|int
      */
-    public function inc($name, $step = 1) {
-        return $this->handler->inc($name, $step);
+    public static function inc($name, $step = 1) {
+        return self::initialize()->inc($name, $step);
     }
 
     /**
@@ -95,8 +84,8 @@ class Caching {
      * @param int       $step 步长
      * @return false|int
      */
-    public function dec($name, $step = 1) {
-        return $this->handler->dec($name, $step);
+    public static function dec($name, $step = 1) {
+        return self::initialize()->dec($name, $step);
     }
 
     /**
@@ -104,16 +93,16 @@ class Caching {
      * @param string $name 缓存变量名
      * @return bool
      */
-    public function rm($name) {
-        return $this->handler->rm($name);
+    public static function rm($name) {
+        return self::initialize()->rm($name);
     }
 
     /**
      * 清除缓存
      * @return bool
      */
-    public function clear() {
-        return $this->handler->clear();
+    public static function clear() {
+        return self::initialize()->clear();
     }
 
 }

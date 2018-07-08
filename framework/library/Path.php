@@ -16,7 +16,7 @@ class Path {
      * @param string $path
      * @return string
      */
-    public function replace($path) {
+    public static function replace($path) {
         return str_replace(['/', '\\'], DS, $path);
     }
 
@@ -25,7 +25,7 @@ class Path {
      * @param string $filename 文件名称
      * @return bool
      */
-    public function isWritable($filename) {
+    public static function isWritable($filename) {
         return is_writable($filename);
     }
 
@@ -35,13 +35,13 @@ class Path {
      * @param int $permissions 权限
      * @return bool
      */
-    public function mkDir($path, $permissions = 0777) {
+    public static function mkDir($path, $permissions = 0777) {
         if (is_dir($path)) {
             return true;
         }
         $_path = dirname($path);
         if ($_path !== $path) {
-            $this->mkDir($_path, $permissions);
+            self::mkDir($_path, $permissions);
         }
         return mkdir($path, $permissions);
     }
@@ -51,7 +51,7 @@ class Path {
      * @param string $dir 目录
      * @return bool
      */
-    public function clearDir($dir) {
+    public static function clearDir($dir) {
         $path = rtrim($dir, '/\\');
         if (is_dir($path)) {
             $directory = new RecursiveDirectoryIterator($path);

@@ -58,26 +58,12 @@ class Db {
     public $linkRead;
 
     /**
-     * 配制
-     * @var Config
-     */
-    public $config;
-
-    /**
-     * 日志
-     * @var Log
-     */
-    public $log;
-
-    /**
      * ORM
      * @var ORM
      */
     public $ORM;
 
-    public function __construct(Config $config, Log $log, ORM $orm) {
-        $this->config = $config;
-        $this->log = $log;
+    public function __construct(ORM $orm) {
         $this->ORM = $orm;
         $this->initialize();
     }
@@ -88,7 +74,7 @@ class Db {
      * @return $this
      */
     public function initialize(array $config = null): Db {
-        !empty($config) || ($config = $this->config->db);
+        !empty($config) || ($config = Config::get('db'));
         $this->identifier = $config['identifier'] ?? '``';
         $this->dbprefix = $config['dbprefix'] ?? '';
         $this->options = $config['options'] ?? '';
@@ -150,7 +136,7 @@ class Db {
      */
     public function beginTransaction(): bool {
         if ($this->linkWrite->beginTransaction()) {
-            $this->logging && $this->log->sql('[DB]启动事务');
+            $this->logging && Log::sql('[DB]启动事务');
             return true;
         }
         return false;
@@ -162,7 +148,7 @@ class Db {
      */
     public function commit(): bool {
         if ($this->linkWrite->commit()) {
-            $this->logging && $this->log->sql('[DB]提交事务');
+            $this->logging && Log::sql('[DB]提交事务');
             return true;
         }
         return false;
@@ -174,7 +160,7 @@ class Db {
      */
     public function rollBack(): bool {
         if ($this->linkWrite->rollBack()) {
-            $this->logging && $this->log->sql('[DB]回滚事务');
+            $this->logging && Log::sql('[DB]回滚事务');
             return true;
         }
         return false;
@@ -250,7 +236,8 @@ class Db {
 
         $start = microtime(true);
         $sth = $pdo->prepare($statement);
-        //echo $statement . PHP_EOL;
+//        echo $statement . PHP_EOL;
+//        print_r($parameters);
         $sth !== false && $sth->execute($parameters);
         $this->setPrepareLog($start, microtime(true), $statement);
         if ($pdo->errorCode() === PDO::ERR_NONE) {
@@ -327,7 +314,7 @@ class Db {
     }
 
     private function setPrepareLog($start, $end, $message) {
-        $this->logging && $this->log->sql('[SQL]' . number_format($end - $start, 6) . ' ' . $message);
+        $this->logging && Log::sql('[SQL]' . number_format($end - $start, 6) . ' ' . $message);
     }
 
     public function __destruct() {

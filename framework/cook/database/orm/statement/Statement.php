@@ -341,16 +341,6 @@ abstract class Statement {
     }
 
     /**
-     * @param int $limit
-     * @param int $page
-     * @return $this
-     */
-    public function page($limit, $page = null) {
-        $this->Limit->limit($limit, 0, $page);
-        return $this;
-    }
-
-    /**
      * @return mixed
      */
     abstract public function getSql();

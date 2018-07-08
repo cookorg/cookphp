@@ -11,16 +11,16 @@ use cook\core\Invoke;
 class Hook {
 
     /** @var array */
-    protected $hooks = [];
+    protected static $hooks = [];
 
     /**
      * 执行函数、类
      * @var Invoke
      */
-    protected $invoke;
+    protected static $invoke;
 
-    public function __construct(Invoke $invoke) {
-        $this->invoke = $invoke;
+    public static function __construct(Invoke $invoke) {
+        self::$invoke = $invoke;
     }
 
     /**
@@ -28,16 +28,16 @@ class Hook {
      * @param string   $event 事件名称
      * @param callable|string $callable 一个函数或函数名称
      */
-    public function on($event, $callable) {
-        $this->hooks[$event][] = $callable;
+    public static function on($event, $callable) {
+        self::$hooks[$event][] = $callable;
     }
 
     /**
      * 清除事件
      * @param string $event 事件名称
      */
-    public function clear($event) {
-        unset($this->hooks[$event]);
+    public static function clear($event) {
+        unset(self::$hooks[$event]);
     }
 
     /**
@@ -45,10 +45,10 @@ class Hook {
      * @param string     $event 事件名称
      * @param null|mixed $payload 额外参数
      */
-    public function trigger($event, &$payload = null) {
-        if (isset($this->hooks[$event])) {
-            foreach ($this->hooks[$event] as $closure) {
-                $this->invoke->call($closure, $payload);
+    public static function trigger($event, &$payload = null) {
+        if (isset(self::$hooks[$event])) {
+            foreach (self::$hooks[$event] as $closure) {
+                self::$invoke->call($closure, $payload);
             }
         }
     }

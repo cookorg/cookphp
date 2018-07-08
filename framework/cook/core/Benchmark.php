@@ -11,21 +11,20 @@ class Benchmark {
     /**
      * @var array
      */
-    public $time = [];
+    public static $time = [];
 
     /**
      * @var array
      */
-    public $memory = [];
+    public static $memory = [];
 
     /**
      * 标记时间
      * @param	string	$name
      * @return	$this
      */
-    public function markTime($name) {
-        $this->time[$name] = microtime(true);
-        return $this;
+    public static function markTime($name) {
+        self::$time[$name] = microtime(true);
     }
 
     /**
@@ -33,9 +32,8 @@ class Benchmark {
      * @param	string	$name
      * @return	$this
      */
-    public function markMemory($name) {
-        $this->memory[$name] = memory_get_usage(false);
-        return $this;
+    public static function markMemory($name) {
+        self::$memory[$name] = memory_get_usage(false);
     }
 
     /**
@@ -45,8 +43,8 @@ class Benchmark {
      * @param int $decimals 小数位数
      * @return string
      */
-    public function elapsedTime($pointa = '', $pointb = '', $decimals = 4) {
-        return number_format(($this->time[$pointb] ?? microtime(true)) - ($this->time[$pointa] ?? microtime(true)), $decimals);
+    public static function elapsedTime($pointa = '', $pointb = '', $decimals = 4) {
+        return number_format((self::$time[$pointb] ?? microtime(true)) - (self::$time[$pointa] ?? microtime(true)), $decimals);
     }
 
     /**
@@ -55,8 +53,8 @@ class Benchmark {
      * @param string $pointb 结束标记
      * @return string
      */
-    public function elapsedMemory($pointa = '', $pointb = '') {
-        return round((($this->memory[$pointb] ?? memory_get_usage(false)) - ($this->memory[$pointa] ?? memory_get_usage(false))) / 1024 / 1024, 2) . 'MB';
+    public static function elapsedMemory($pointa = '', $pointb = '') {
+        return round(((self::$memory[$pointb] ?? memory_get_usage(false)) - (self::$memory[$pointa] ?? memory_get_usage(false))) / 1024 / 1024, 2) . 'MB';
     }
 
 }

@@ -15,37 +15,27 @@ class Router implements RequestMethod {
     /**
      * @var array
      */
-    protected $routes = [];
+    protected static $routes = [];
 
     /**
      * @var array
      */
-    public $route = [];
+    public static $route = [];
 
     /**
      * @var string
      */
-    protected $baseRoute = '';
-
-    /**
-     * Request
-     * @var Request
-     */
-    protected $request;
-
-    public function __construct(Request $request) {
-        $this->request = $request;
-    }
+    protected static $baseRoute = '';
 
     /**
      * 注册HEAD路由
      * @param string $url URL或正则表达
      * @param string|callable $controller 控制器或回调函数
      * @param string $action 方法
-     * @return $this
+     * 
      */
-    public function head(string $url, $controller, string $action = '') {
-        return $this->map([self::METHOD_HEAD], $url, $controller, $action);
+    public static function head(string $url, $controller, string $action = '') {
+        return self::map([self::METHOD_HEAD], $url, $controller, $action);
     }
 
     /**
@@ -53,10 +43,10 @@ class Router implements RequestMethod {
      * @param string $url URL或正则表达
      * @param string|callable $controller 控制器或回调函数
      * @param string $action 方法
-     * @return $this
+     * 
      */
-    public function get(string $url, $controller, string $action = '') {
-        return $this->map([self::METHOD_GET], $url, $controller, $action);
+    public static function get(string $url, $controller, string $action = '') {
+        return self::map([self::METHOD_GET], $url, $controller, $action);
     }
 
     /**
@@ -64,10 +54,10 @@ class Router implements RequestMethod {
      * @param string $url URL或正则表达
      * @param string|callable $controller 控制器或回调函数
      * @param string $action 方法
-     * @return $this
+     * 
      */
-    public function post(string $url, $controller, string $action = '') {
-        return $this->map([self::METHOD_POST], $url, $controller, $action);
+    public static function post(string $url, $controller, string $action = '') {
+        return self::map([self::METHOD_POST], $url, $controller, $action);
     }
 
     /**
@@ -75,10 +65,10 @@ class Router implements RequestMethod {
      * @param string $url URL或正则表达
      * @param string|callable $controller 控制器或回调函数
      * @param string $action 方法
-     * @return $this
+     * 
      */
-    public function get_post(string $url, $controller, string $action = '') {
-        return $this->map([self::METHOD_GET, self::METHOD_POST], $url, $controller, $action);
+    public static function get_post(string $url, $controller, string $action = '') {
+        return self::map([self::METHOD_GET, self::METHOD_POST], $url, $controller, $action);
     }
 
     /**
@@ -86,10 +76,10 @@ class Router implements RequestMethod {
      * @param string $url URL或正则表达
      * @param string|callable $controller 控制器或回调函数
      * @param string $action 方法
-     * @return $this
+     * 
      */
-    public function put(string $url, $controller, string $action = '') {
-        return $this->map([self::METHOD_PUT], $url, $controller, $action);
+    public static function put(string $url, $controller, string $action = '') {
+        return self::map([self::METHOD_PUT], $url, $controller, $action);
     }
 
     /**
@@ -97,10 +87,10 @@ class Router implements RequestMethod {
      * @param string $url URL或正则表达
      * @param string|callable $controller 控制器或回调函数
      * @param string $action 方法
-     * @return $this
+     * 
      */
-    public function patch(string $url, $controller, string $action = '') {
-        return $this->map([self::METHOD_PATCH], $url, $controller, $action);
+    public static function patch(string $url, $controller, string $action = '') {
+        return self::map([self::METHOD_PATCH], $url, $controller, $action);
     }
 
     /**
@@ -108,10 +98,10 @@ class Router implements RequestMethod {
      * @param string $url URL或正则表达
      * @param string|callable $controller 控制器或回调函数
      * @param string $action 方法
-     * @return $this
+     * 
      */
-    public function delete(string $url, $controller, string $action = '') {
-        return $this->map([self::METHOD_DELETE], $url, $controller, $action);
+    public static function delete(string $url, $controller, string $action = '') {
+        return self::map([self::METHOD_DELETE], $url, $controller, $action);
     }
 
     /**
@@ -119,10 +109,10 @@ class Router implements RequestMethod {
      * @param string $url URL或正则表达
      * @param string|callable $controller 控制器或回调函数
      * @param string $action 方法
-     * @return $this
+     * 
      */
-    public function purge(string $url, $controller, string $action = '') {
-        return $this->map([self::METHOD_PURGE], $url, $controller, $action);
+    public static function purge(string $url, $controller, string $action = '') {
+        return self::map([self::METHOD_PURGE], $url, $controller, $action);
     }
 
     /**
@@ -130,10 +120,10 @@ class Router implements RequestMethod {
      * @param string $url URL或正则表达
      * @param string|callable $controller 控制器或回调函数
      * @param string $action 方法
-     * @return $this
+     * 
      */
-    public function options(string $url, $controller, string $action = '') {
-        return $this->map([self::METHOD_OPTIONS], $url, $controller, $action);
+    public static function options(string $url, $controller, string $action = '') {
+        return self::map([self::METHOD_OPTIONS], $url, $controller, $action);
     }
 
     /**
@@ -141,10 +131,10 @@ class Router implements RequestMethod {
      * @param string $url URL或正则表达
      * @param string|callable $controller 控制器或回调函数
      * @param string $action 方法
-     * @return $this
+     * 
      */
-    public function trace(string $url, $controller, string $action = '') {
-        return $this->map([self::METHOD_TRACE], $url, $controller, $action);
+    public static function trace(string $url, $controller, string $action = '') {
+        return self::map([self::METHOD_TRACE], $url, $controller, $action);
     }
 
     /**
@@ -152,10 +142,10 @@ class Router implements RequestMethod {
      * @param string $url URL或正则表达
      * @param string|callable $controller 控制器或回调函数
      * @param string $action 方法
-     * @return $this
+     * 
      */
-    public function connect(string $url, $controller, string $action = '') {
-        return $this->map([self::METHOD_CONNECT], $url, $controller, $action);
+    public static function connect(string $url, $controller, string $action = '') {
+        return self::map([self::METHOD_CONNECT], $url, $controller, $action);
     }
 
     /**
@@ -163,10 +153,10 @@ class Router implements RequestMethod {
      * @param string $url URL或正则表达
      * @param string|callable $controller 控制器或回调函数
      * @param string $action 方法
-     * @return $this
+     * 
      */
-    public function any(string $url, $controller, string $action = '') {
-        return $this->map([self::METHOD_HEAD, self::METHOD_GET, self::METHOD_POST, self::METHOD_PUT, self::METHOD_PATCH, self::METHOD_DELETE, self::METHOD_PURGE, self::METHOD_OPTIONS, self::METHOD_TRACE, self::METHOD_CONNECT], $url, $controller, $action);
+    public static function any(string $url, $controller, string $action = '') {
+        return self::map([self::METHOD_HEAD, self::METHOD_GET, self::METHOD_POST, self::METHOD_PUT, self::METHOD_PATCH, self::METHOD_DELETE, self::METHOD_PURGE, self::METHOD_OPTIONS, self::METHOD_TRACE, self::METHOD_CONNECT], $url, $controller, $action);
     }
 
     /**
@@ -176,13 +166,13 @@ class Router implements RequestMethod {
      * @param array|string $methods
      * @return void
      */
-    public function group($baseRoute, $callback) {
-        $this->baseRoute = '';
+    public static function group($baseRoute, $callback) {
+        self::$baseRoute = '';
         if (is_callable($callback)) {
-            $curBaseRoute = $this->baseRoute;
-            $this->baseRoute .= $baseRoute;
+            $curBaseRoute = self::$baseRoute;
+            self::$baseRoute .= $baseRoute;
             call_user_func($callback);
-            $this->baseRoute = $curBaseRoute;
+            self::$baseRoute = $curBaseRoute;
         }
     }
 
@@ -193,18 +183,16 @@ class Router implements RequestMethod {
      * @param string|callable $controller 控制器或回调函数
      * @param string $action 方法
      * @param string $template 模板
-     * @return $this
      */
-    public function map(array $methods, string $url, $controller, string $action = '') {
-        return $this->addRoute(['methods' => $methods, 'url' => $this->baseRoute ? rtrim($this->baseRoute . '/' . trim($url, '/'), '/') : $url, 'controller' => $controller, 'action' => $action]);
+    public static function map(array $methods, string $url, $controller, string $action = '') {
+        return self::addRoute(['methods' => $methods, 'url' => self::$baseRoute ? rtrim(self::$baseRoute . '/' . trim($url, '/'), '/') : $url, 'controller' => $controller, 'action' => $action]);
     }
 
     /**
      * 注册路由
      * @param array $data
-     * @return $this
      */
-    public function addRoute(array $data) {
+    public static function addRoute(array $data) {
         $route = [
             'methods' => $data['methods'] ?? [self::METHOD_GET],
             'url' => $data['url'] ?? null,
@@ -218,17 +206,16 @@ class Router implements RequestMethod {
         if (empty($route['methods']) || !is_array($route['methods'])) {
             throw new Exception('必须指定一个请求模式');
         }
-        $this->routes[$route['url']] = $route;
-        return $this;
+        self::$routes[$route['url']] = $route;
     }
 
     /**
      * 匹配路由
      * @param string $url
-     * @return $this
+     * 
      */
-    public function matchUrl($url = null) {
-        return ($this->matchUrlDirectly(($url = '/' . ltrim($url ?: $this->request->getPathInfo(), '/'))) || $this->matchUrlWithParameters($url)) ? $this : null;
+    public static function matchUrl($url = null) {
+        return (self::matchUrlDirectly(($url = '/' . ltrim($url ?: Request::getPathInfo(), '/'))) || self::matchUrlWithParameters($url)) ? true : null;
     }
 
     /**
@@ -236,9 +223,9 @@ class Router implements RequestMethod {
      * @param string $url
      * @return Route|null
      */
-    protected function matchUrlDirectly($url) {
-        if (array_key_exists($url, $this->routes) && $this->isAcceptedRequestMethod($this->routes[$url]['methods'])) {
-            $this->route = $this->routes[$url];
+    protected static function matchUrlDirectly($url) {
+        if (array_key_exists($url, self::$routes) && self::isAcceptedRequestMethod(self::$routes[$url]['methods'])) {
+            self::$route = self::$routes[$url];
             return true;
         }
         return null;
@@ -249,10 +236,10 @@ class Router implements RequestMethod {
      * @param string $url
      * @return Route|null
      */
-    protected function matchUrlWithParameters($url) {
-        foreach ($this->routes as $route) {
-            if (preg_match_all('/^' . str_replace('/', '\/', $route['url']) . '$/', $url, $match) && $this->isAcceptedRequestMethod($route['methods'])) {
-                $this->route = $route += ['values' => $match[1] ?? []];
+    protected static function matchUrlWithParameters($url) {
+        foreach (self::$routes as $route) {
+            if (preg_match_all('/^' . str_replace('/', '\/', $route['url']) . '$/', $url, $match) && self::isAcceptedRequestMethod($route['methods'])) {
+                self::$route = $route += ['values' => $match[1] ?? []];
                 return true;
             }
         }
@@ -264,16 +251,16 @@ class Router implements RequestMethod {
      * @param string $methods
      * @return bool
      */
-    protected function isAcceptedRequestMethod($methods) {
-        return in_array($this->request->getMethod(), $methods);
+    protected static function isAcceptedRequestMethod($methods) {
+        return in_array(Request::getMethod(), $methods);
     }
 
     /**
      * 获取所有值
      * @return array
      */
-    public function getValues() {
-        return $this->route['values'] ?? [];
+    public static function getValues() {
+        return self::$route['values'] ?? [];
     }
 
 }

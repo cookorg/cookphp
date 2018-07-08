@@ -3,7 +3,6 @@
 namespace cook\core;
 
 use cook\database\Db;
-use cook\http\Input;
 
 /**
  * 数据模型
@@ -18,20 +17,13 @@ abstract class Model {
     public $db;
 
     /**
-     * 输入类
-     * @var Input
-     */
-    public $input;
-
-    /**
      * 表名称
      * @var string
      */
     public $form;
 
-    public function __construct(Db $db, Input $input) {
+    public function __construct(Db $db) {
         $this->db = $db;
-        $this->input = $input;
         $this->form = strtolower(trim(preg_replace("/[A-Z]/", "_\\0", ($pos = strrpos(($name = get_class($this)), '\\')) !== false ? substr($name, $pos + 1) : $name), '_'));
     }
 

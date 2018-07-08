@@ -1,6 +1,5 @@
 <?php
 
-use cook\core\Container as DI;
 use cook\core\Autoloader;
 use cook\core\App;
 
@@ -67,8 +66,7 @@ defined('APPNAMESPACE') ||
          */
         define('APPNAMESPACE', 'app');
 
-require BASEPATH . 'cook' . DS . 'core' . DS . 'Container.php';
 require BASEPATH . 'cook' . DS . 'core' . DS . 'Autoloader.php';
 
-DI::get(Autoloader::class)->register(CONFIGPATH . 'autoloader.php', BASEPATH . 'autoloader.php');
-DI::get(App::class)->run();
+Autoloader::register(CONFIGPATH . 'autoloader.php', BASEPATH . 'autoloader.php');
+App::run();

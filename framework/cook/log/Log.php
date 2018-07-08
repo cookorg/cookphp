@@ -25,17 +25,7 @@ class Log {
     /**
      * @var Driver
      */
-    private $handler = null;
-
-    /**
-     * 应用配置
-     * @var Config
-     */
-    public $config;
-
-    public function __construct(Config $config) {
-        $this->config = $config;
-    }
+    private static $handler = null;
 
     /**
      * 系统不可用
@@ -43,8 +33,8 @@ class Log {
      * @param array  $context
      * @return void
      */
-    public function emergency($message, array $context = []) {
-        $this->log(self::EMERGENCY, $message, $context);
+    public static function emergency($message, array $context = []) {
+        self::log(self::EMERGENCY, $message, $context);
     }
 
     /**
@@ -53,8 +43,8 @@ class Log {
      * @param array $context
      * @return void
      */
-    public function alert($message, array $context = []) {
-        $this->log(self::ALERT, $message, $context);
+    public static function alert($message, array $context = []) {
+        self::log(self::ALERT, $message, $context);
     }
 
     /**
@@ -64,8 +54,8 @@ class Log {
      * @param array $context
      * @return void
      */
-    public function critical($message, array $context = []) {
-        $this->log(self::CRITICAL, $message, $context);
+    public static function critical($message, array $context = []) {
+        self::log(self::CRITICAL, $message, $context);
     }
 
     /**
@@ -74,8 +64,8 @@ class Log {
      * @param array $context
      * @return void
      */
-    public function error($message, array $context = []) {
-        $this->log(self::ERROR, $message, $context);
+    public static function error($message, array $context = []) {
+        self::log(self::ERROR, $message, $context);
     }
 
     /**
@@ -85,8 +75,8 @@ class Log {
      * @param array $context
      * @return void
      */
-    public function warning($message, array $context = []) {
-        $this->log(self::WARNING, $message, $context);
+    public static function warning($message, array $context = []) {
+        self::log(self::WARNING, $message, $context);
     }
 
     /**
@@ -95,8 +85,8 @@ class Log {
      * @param array $context
      * @return void
      */
-    public function notice($message, array $context = []) {
-        $this->log(self::NOTICE, $message, $context);
+    public static function notice($message, array $context = []) {
+        self::log(self::NOTICE, $message, $context);
     }
 
     /**
@@ -105,8 +95,8 @@ class Log {
      * @param array $context
      * @return void
      */
-    public function info($message, array $context = []) {
-        $this->log(self::INFO, $message, $context);
+    public static function info($message, array $context = []) {
+        self::log(self::INFO, $message, $context);
     }
 
     /**
@@ -115,8 +105,8 @@ class Log {
      * @param array $context
      * @return void
      */
-    public function debug($message, array $context = []) {
-        $this->log(self::DEBUG, $message, $context);
+    public static function debug($message, array $context = []) {
+        self::log(self::DEBUG, $message, $context);
     }
 
     /**
@@ -125,8 +115,8 @@ class Log {
      * @param array $context
      * @return void
      */
-    public function sql($message, array $context = []) {
-        $this->log(self::SQL, $message, $context);
+    public static function sql($message, array $context = []) {
+        self::log(self::SQL, $message, $context);
     }
 
     /**
@@ -137,8 +127,8 @@ class Log {
      * @param array $context
      * @return void
      */
-    public function log($level, $message, array $context = []) {
-        in_array($level, $this->config->get('log.logger')) && $this->setLogger($level, $this->interpolate($message, $context));
+    public static function log($level, $message, array $context = []) {
+        in_array($level, Config::get('log.logger')) && self::setLogger($level, self::interpolate($message, $context));
     }
 
     /**
@@ -146,27 +136,27 @@ class Log {
      * @param string $level
      * @param string $message
      */
-    public function setLogger($level, $message) {
-        !$this->handler && $this->connect();
-        $this->handler->write($level, $message);
+    public static function setLogger($level, $message) {
+        !self::$handler && self::connect();
+        self::$handler->write($level, $message);
     }
 
     /**
      * 连接驱动
      * @return $this
      */
-    private function connect() {
-        if (!$this->handler) {
-            $driver = $this->config->get('log.driver', 'File');
+    private static function connect() {
+        if (!self::$handler) {
+            $driver = Config::get('log.driver', 'File');
             $class = false !== strpos($driver, '\\') ? $driver : 'cook\\log\\driver\\' . ucwords($driver);
-            $this->handler = DI::get($class);
-            if (!($this->handler instanceof Driver)) {
+            self::$handler = DI::get($class);
+            if (!(self::$handler instanceof Driver)) {
                 throw new Exception('Error Log Handler:' . $class);
             }
         }
     }
 
-    protected function interpolate($message, array $context = []) {
+    protected static function interpolate($message, array $context = []) {
         $replace = [];
         foreach ($context as $key => $val) {
             if (!is_array($val) || (is_object($val) && method_exists($val, '__toString'))) {
