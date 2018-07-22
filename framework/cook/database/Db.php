@@ -210,7 +210,6 @@ class Db {
      * @return \PDOStatement|int
      */
     public function exec(string $statement, array $parameters = []) {
-
         $sth = $this->prepareExecute($statement, $parameters);
         return $sth instanceof PDOStatement ? $sth : 0;
     }
@@ -233,11 +232,10 @@ class Db {
         } else {
             $pdo = $this->linkRead;
         }
-
         $start = microtime(true);
         $sth = $pdo->prepare($statement);
-//        echo $statement . PHP_EOL;
-//        print_r($parameters);
+        //echo $statement . PHP_EOL;
+        //print_r($parameters);
         $sth !== false && $sth->execute($parameters);
         $this->setPrepareLog($start, microtime(true), $statement);
         if ($pdo->errorCode() === PDO::ERR_NONE) {
@@ -246,11 +244,9 @@ class Db {
             $this->errorinfo[] = ['code' => $pdo->errorCode(), 'message' => $pdo->errorInfo()[2]];
             $this->inTransaction() && $this->rollBack();
         }
-
-        print_r($this->errorinfo);
-        exit;
+        //print_r($this->errorinfo);
+        //exit;
         //$sth->debugDumpParams();
-
         return false;
     }
 

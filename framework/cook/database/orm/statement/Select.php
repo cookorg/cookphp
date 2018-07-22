@@ -313,9 +313,8 @@ class Select extends Statement {
      */
     public function getSql() {
         if (empty($this->table)) {
-            trigger_error('No table is set for selection', E_USER_ERROR);
+            trigger_error('没有设置要查询的表格', E_USER_ERROR);
         }
-
         $sql = $this->getSelect() . ' ' . $this->getColumns();
         $sql .= ' FROM ' . $this->table;
         $sql .= $this->Join;
@@ -325,7 +324,6 @@ class Select extends Statement {
         $sql .= $this->Order;
         $sql .= $this->Limit;
         $sql .= $this->Offset;
-        //echo $sql.PHP_EOL;
         return $sql;
     }
 
@@ -375,7 +373,6 @@ class Select extends Statement {
      * @return \PDOstatement
      */
     public function execute() {
-        //print_r($this->values);        print_r($this->getSql());exit;
         return $this->db->query($this->getSql(), $this->values);
     }
 

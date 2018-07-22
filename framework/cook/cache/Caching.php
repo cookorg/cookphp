@@ -30,7 +30,7 @@ class Caching {
      * @return Driver
      */
     public static function start($driver = null) {
-        $handler = DI::get('cook\\cache\\driver\\' . ucwords($driver ?: (Config::get('caching.driver') ?: 'File')));
+        $handler = DI::get('cook\\cache\\driver\\' . ucwords($driver ?: (Config::get('caching.driver', 'File') )));
         if ($handler instanceof Driver && $handler->enabled()) {
             return $handler;
         } else {

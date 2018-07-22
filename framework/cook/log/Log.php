@@ -22,6 +22,8 @@ class Log {
     const DEBUG = 'debug';
     const SQL = 'sql';
 
+    public static $logs = [];
+
     /**
      * @var Driver
      */
@@ -128,6 +130,7 @@ class Log {
      * @return void
      */
     public static function log($level, $message, array $context = []) {
+        self::$logs[$level][] = $message;
         in_array($level, Config::get('log.logger')) && self::setLogger($level, self::interpolate($message, $context));
     }
 

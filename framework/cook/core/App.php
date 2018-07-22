@@ -6,7 +6,6 @@ use cook\core\Benchmark;
 use cook\core\Config;
 use cook\core\Invoke;
 use cook\router\Router;
-use Throwable;
 
 /**
  * 应用处理
@@ -21,6 +20,7 @@ class App {
         Benchmark::markTime('start_time');
         Benchmark::markMemory('start_memory');
         self::initialize();
+        self::initroute();
     }
 
     /**
@@ -28,8 +28,7 @@ class App {
      */
     protected static function initialize() {
         //设置默认时区
-        date_default_timezone_set(Config::get('app.timezone') ?: 'PRC');
-        self::initroute();
+        date_default_timezone_set(Config::get('app.timezone', 'PRC'));
     }
 
     /**
@@ -38,7 +37,7 @@ class App {
     protected static function initroute() {
         if (is_file(($filename = APPPATH . 'Router.php'))) {
             require_once $filename;
-            Router::matchUrl() ? (!empty(Router::$route['controller']) && !empty(Router::$route['action']) ? Invoke::method(Router::$route['controller'], Router::$route['action'], Router::getValues()) : (!empty(Router::$route['controller']) ? Invoke::call(Router::$route['controller'], Router::getValues()) : null)) : $this->showError(404);
+            Router::matchUrl() ? (!empty(Router::$route['controller']) && !empty(Router::$route['action']) ? Invoke::method(Router::$route['controller'], Router::$route['action'], Router::getValues()) : (!empty(Router::$route['controller']) ? Invoke::call(Router::$route['controller'], Router::getValues()) : null)) : exit();
         }
     }
 

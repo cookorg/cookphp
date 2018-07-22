@@ -1,6 +1,5 @@
 <?php
 
-
 namespace library;
 
 /**
@@ -21,28 +20,16 @@ class Strings {
     }
 
     /**
-     * 检查字符串是否是UTF8编码
-     *
-     * @param string $string 字符串
-     * @return Boolean
-     */
-    static public function isUtf8($string): bool {
-        return Validate::isUtf8($string);
-    }
-
-    /**
      * 自动转换字符集 支持数组转换
      * 
      * @param string|array $string 字符
      * @param string $from 当前编码
      * @param string $to 目标编码
      */
-    static public function autoCharset($string, $from = 'gbk', $to = 'utf-8') {
-
+    public static function autoCharset($string, $from = 'gbk', $to = 'utf-8') {
         if (strtolower($from) === strtolower($to) || empty($string)) {
             return $string;
-        }
-        if (is_string($string)) {
+        } elseif (is_string($string)) {
             if (function_exists('mb_convert_encoding')) {
                 return mb_convert_encoding($string, $to, $from);
             } elseif (function_exists('iconv')) {
@@ -75,7 +62,8 @@ class Strings {
      * @param string $charset 编码格式
      * @return string
      */
-    static public function msubstr($str, $start, $length, $suffix = true, $charset = CHARSET) {
+    public static function msubstr($str, $start, $length, $suffix = true, $charset = 'utf-8') {
+        $re = [];
         $re['utf-8'] = "/[\x01-\x7f]|[\xc2-\xdf][\x80-\xbf]|[\xe0-\xef][\x80-\xbf]{2}|[\xf0-\xff][\x80-\xbf]{3}/";
         $re['gb2312'] = "/[\x01-\x7f]|[\xb0-\xf7][\xa0-\xfe]/";
         $re['gbk'] = "/[\x01-\x7f]|[\x81-\xfe][\x40-\xfe]/";
@@ -91,7 +79,7 @@ class Strings {
      * @param string $type 字串类型 0 字母 1 数字 其它 混合
      * @return string
      */
-    static public function randString($len = 6, $type = '') {
+    public static function randString($len = 6, $type = '') {
         switch ($type) {
             case 0 :
                 $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -116,6 +104,10 @@ class Strings {
         return substr($chars, 0, $len);
     }
 
+    public static function sbuildOrderNo($len = 16) {
+        return date('YmdHi') . substr(implode(null, array_map('ord', str_split(uniqid(), 1))), 0, $len - 12);
+    }
+
     /**
      * 去掉UTF-8 Bom头
      * @param  string    $string
@@ -127,6 +119,67 @@ class Strings {
             return substr($string, 3);
         }
         return $string;
+    }
+
+    /**
+     * 加密和解密
+     * @param string $string
+     * @param bool $operation true 解密 fasle 加密
+     * @param string $key
+     * @param int $expiry
+     * @return string
+     */
+    public static function authcode($string, $operation = true, $key = '', $expiry = 0) {
+        $ckey_length = 4;
+
+        if ($operation) {
+            $string = str_replace(['_', '-'], ['/', '+'], $string);
+        }
+
+        $key = md5($key ? $key : 'www.cookphp.org');
+        $keya = md5(substr($key, 0, 16));
+        $keyb = md5(substr($key, 16, 16));
+        $keyc = $ckey_length ? ($operation ? substr($string, 0, $ckey_length) : substr(md5(microtime()), -$ckey_length)) : '';
+
+        $cryptkey = $keya . md5($keya . $keyc);
+        $key_length = strlen($cryptkey);
+
+        $string = $operation ? base64_decode(substr($string, $ckey_length)) : sprintf('%010d', $expiry ? $expiry + time() : 0) . substr(md5($string . $keyb), 0, 16) . $string;
+        $string_length = strlen($string);
+
+        $result = '';
+        $box = range(0, 255);
+
+        $rndkey = array();
+        for ($i = 0; $i <= 255; $i++) {
+            $rndkey[$i] = ord($cryptkey[$i % $key_length]);
+        }
+
+        for ($j = $i = 0; $i < 256; $i++) {
+            $j = ($j + $box[$i] + $rndkey[$i]) % 256;
+            $tmp = $box[$i];
+            $box[$i] = $box[$j];
+            $box[$j] = $tmp;
+        }
+
+        for ($a = $j = $i = 0; $i < $string_length; $i++) {
+            $a = ($a + 1) % 256;
+            $j = ($j + $box[$a]) % 256;
+            $tmp = $box[$a];
+            $box[$a] = $box[$j];
+            $box[$j] = $tmp;
+            $result .= chr(ord($string[$i]) ^ ($box[($box[$a] + $box[$j]) % 256]));
+        }
+
+        if ($operation) {
+            if ((substr($result, 0, 10) == 0 || substr($result, 0, 10) - time() > 0) && substr($result, 10, 16) == substr(md5(substr($result, 26) . $keyb), 0, 16)) {
+                return substr($result, 26);
+            } else {
+                return '';
+            }
+        } else {
+            return str_replace(['/', '+'], ['_', '-'], $keyc . str_replace('=', '', base64_encode($result)));
+        }
     }
 
 }

@@ -15,7 +15,7 @@ class Join extends Container {
      * @param string $joinType
      */
     public function join($table, $first, $operator = null, $second = null, $joinType = 'INNER') {
-        $this->container[] = ' ' . $joinType . ' JOIN ' . $table . ' ON ' . $first . ' ' . $operator . ' ' . $second;
+        $this->container[] = ' ' . $joinType . ' JOIN ' . $table . ' ON ' . $first . ' ' . (in_array($operator, $this->exp) ? $operator : ($this->exp[$operator] ?? '=')) . ' ' . $second;
     }
 
     /**
@@ -55,9 +55,7 @@ class Join extends Container {
         if (empty($this->container)) {
             return '';
         }
-
         $args = [];
-
         foreach ($this->container as $join) {
             $args[] = $join;
         }

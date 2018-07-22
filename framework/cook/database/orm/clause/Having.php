@@ -30,7 +30,6 @@ class Having extends Container {
      */
     public function havingCount($column, $operator = null) {
         $column = 'COUNT( ' . $column . ' )';
-
         $this->having($column, $operator);
     }
 
@@ -40,7 +39,6 @@ class Having extends Container {
      */
     public function havingMax($column, $operator = null) {
         $column = 'MAX( ' . $column . ' )';
-
         $this->having($column, $operator);
     }
 
@@ -50,7 +48,6 @@ class Having extends Container {
      */
     public function havingMin($column, $operator = null) {
         $column = 'MIN( ' . $column . ' )';
-
         $this->having($column, $operator);
     }
 
@@ -60,7 +57,6 @@ class Having extends Container {
      */
     public function havingAvg($column, $operator = null) {
         $column = 'AVG( ' . $column . ' )';
-
         $this->having($column, $operator);
     }
 
@@ -70,7 +66,6 @@ class Having extends Container {
      */
     public function havingSum($column, $operator = null) {
         $column = 'SUM( ' . $column . ' )';
-
         $this->having($column, $operator);
     }
 
@@ -81,9 +76,7 @@ class Having extends Container {
         if (empty($this->container)) {
             return '';
         }
-
         $args = [];
-
         foreach ($this->container as $having) {
             $args[] = $having;
         }

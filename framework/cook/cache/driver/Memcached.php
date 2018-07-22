@@ -3,6 +3,7 @@
 namespace cook\cache\driver;
 
 use cook\cache\Driver;
+use cook\core\Config;
 
 class Memcached extends Driver {
 
@@ -25,7 +26,7 @@ class Memcached extends Driver {
         if (!extension_loaded('memcached')) {
             return false;
         }
-        $this->configBase += $this->config->get('memcached', []);
+        $this->configBase += Config::get('memcached', []);
         $this->handler = new \Memcached;
         if (!empty($thi['option'])) {
             $this->handler->setOptions($this->configBase['option']);
@@ -70,7 +71,7 @@ class Memcached extends Driver {
         if ($expire instanceof \DateTime) {
             $expire = $expire->getTimestamp() - time();
         }
-       
+
         $key = $this->filename($name);
         $expire = 0 == $expire ? 0 : time() + $expire;
         if ($this->handler->set($key, $value, $expire)) {

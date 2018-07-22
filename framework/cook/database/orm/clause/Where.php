@@ -7,8 +7,7 @@ namespace cook\database\orm\clause;
  */
 class Where extends Container {
 
-    // 数据库表达式
-    protected $exp = ['eq' => '=', 'neq' => '<>', 'gt' => '>', 'egt' => '>=', 'lt' => '<', 'elt' => '<='];
+    
 
     /**
      * @param $column
@@ -40,11 +39,9 @@ class Where extends Container {
      */
     public function whereBetween($column, $chainType = 'AND', $not = false) {
         $syntax = 'BETWEEN';
-
         if ($not) {
             $syntax = 'NOT BETWEEN';
         }
-
         $this->container[] = ' ' . $chainType . ' ' . $column . ' ' . $syntax . ' ? AND ?';
     }
 

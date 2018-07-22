@@ -12,13 +12,12 @@ class Delete extends Statement {
      */
     public function getSql() {
         if (empty($this->table)) {
-            trigger_error('No table is set for deletion', E_USER_ERROR);
+            trigger_error('没有设置要删除的表格', E_USER_ERROR);
         }
         $sql = 'DELETE FROM ' . $this->table;
         $sql .= $this->Where;
         $sql .= $this->Order;
         $sql .= $this->Limit;
-
         return $sql;
     }
 

@@ -42,18 +42,16 @@ class Update extends Statement {
      */
     public function getSql() {
         if (empty($this->table)) {
-            trigger_error('No table is set for update', E_USER_ERROR);
+            trigger_error('没有设置要更新的表', E_USER_ERROR);
         }
         if (empty($this->columns) && empty($this->values)) {
-            trigger_error('Missing columns and values for update', E_USER_ERROR);
+            trigger_error('缺少要更新的列和值', E_USER_ERROR);
         }
         $sql = 'UPDATE ' . $this->table;
         $sql .= ' SET ' . $this->getColumns();
         $sql .= $this->Where;
         $sql .= $this->Order;
         $sql .= $this->Limit;
-//        echo $sql;
-//        exit;
         return $sql;
     }
 

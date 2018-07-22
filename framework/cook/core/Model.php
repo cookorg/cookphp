@@ -24,7 +24,7 @@ abstract class Model {
 
     public function __construct(Db $db) {
         $this->db = $db;
-        $this->form = strtolower(trim(preg_replace("/[A-Z]/", "_\\0", ($pos = strrpos(($name = get_class($this)), '\\')) !== false ? substr($name, $pos + 1) : $name), '_'));
+        $this->form = strtolower(trim(preg_replace('/[A-Z]/', '_\\0', ($pos = strrpos(($name = get_class($this)), '\\')) !== false ? substr($name, $pos + 1) : $name), '_'));
     }
 
     /**

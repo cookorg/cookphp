@@ -15,7 +15,6 @@ class Session {
      * 开始
      */
     public static function start() {
-
         ini_set('session.save_handler', Config::get('session.savehandler') ?: 'files');
         ini_set('session.save_path', Config::get('session.savepath') ?: WRITEPATH . 'session');
         ini_get('session.save_handler') === 'files' && Path::mkDir(ini_get('session.save_path'));

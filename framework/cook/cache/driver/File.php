@@ -12,16 +12,7 @@ use cook\core\Config;
  */
 class File extends Driver {
 
-    /**
-     * 路径处理类
-     * @var Path
-     */
-    public $path;
-
-    public function __construct(Path $path, Config $config) {
-        parent::__construct($config);
-        $this->path = $path;
-    }
+    
 
     public function enabled(): bool {
         return true;
@@ -50,7 +41,7 @@ class File extends Driver {
         $expire = intval($expire ?: $this->configBase['expire']) + time();
         $filename = $this->filename($name);
         $dir = dirname($filename);
-        return $this->path->mkDir($dir) && is_writable($dir) && file_put_contents($filename, "<?php\n//" . sprintf('%012d', $expire) . "\n exit();?>\n" . serialize($value)) ? true : false;
+        return Path::mkDir($dir) && is_writable($dir) && file_put_contents($filename, "<?php\n//" . sprintf('%012d', $expire) . "\n exit();?>\n" . serialize($value)) ? true : false;
     }
 
     public function inc($name, $step = 1) {
@@ -71,7 +62,7 @@ class File extends Driver {
     }
 
     public function clear() {
-        return $this->path->clearDir($this->getPath());
+        return Path::clearDir($this->getPath());
     }
 
     private function getPath() {

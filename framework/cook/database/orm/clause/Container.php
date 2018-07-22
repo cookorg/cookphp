@@ -12,4 +12,10 @@ abstract class Container {
      */
     protected $container = [];
 
+    /**
+     * 数据库表达式
+     * @var array 
+     */
+    protected $exp = ['eq' => '=', 'neq' => '<>', 'gt' => '>', 'egt' => '>=', 'lt' => '<', 'elt' => '<='];
+
 }

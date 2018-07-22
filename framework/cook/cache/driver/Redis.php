@@ -3,6 +3,7 @@
 namespace cook\cache\driver;
 
 use cook\cache\Driver;
+use cook\core\Config;
 
 /**
  * Redis缓存驱动
@@ -33,7 +34,7 @@ class Redis extends Driver {
         if (!extension_loaded('Redis')) {
             return false;
         }
-        $this->configBase += $this->config->get('redis', []);
+        $this->configBase += Config::get('redis', []);
         $func = $this->configBase['persistent'] ? 'pconnect' : 'connect';
         $this->handler = new \Redis;
         $this->handler->$func($this->configBase['host'], $this->configBase['port'], $this->configBase['timeout']);

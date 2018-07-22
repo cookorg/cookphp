@@ -16,11 +16,7 @@ class Offset extends Container {
      * @param $number
      */
     public function offset($number) {
-        if (!is_int($number)) {
-            trigger_error('Expects parameter as integer', E_USER_ERROR);
-        }
-
-        if ($number >= 0) {
+        if (preg_match('/^[1-9][0-9]*$/i', $number) && $number >= 0) {
             $this->offset = intval($number);
         }
     }

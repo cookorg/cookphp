@@ -11,12 +11,6 @@ use cook\core\Config;
 abstract class Driver {
 
     /**
-     * 应用配置
-     * @var Config
-     */
-    public $config;
-
-    /**
      * @var array 
      */
     protected $configBase = [
@@ -24,10 +18,9 @@ abstract class Driver {
         'expire' => 3600,
     ];
 
-    public function __construct(Config $config) {
-        $this->config = $config;
-        $this->configBase['prefix'] = $this->config->caching['prefix'] ?: '';
-        $this->configBase['expire'] = $this->config->caching['expire'] ?? 3600;
+    public function __construct() {
+        $this->configBase['prefix'] = Config::get('caching.prefix', '');
+        $this->configBase['expire'] = Config::get('caching.expire', 3600);
     }
 
     /**

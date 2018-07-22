@@ -83,15 +83,14 @@ class Insert extends Statement {
      */
     public function getSql() {
         if (empty($this->table)) {
-            trigger_error('No table is set for insertion', E_USER_ERROR);
+            trigger_error('没有设置要插入的表格', E_USER_ERROR);
         }
         if (empty($this->columns)) {
-            trigger_error('Missing columns for insertion', E_USER_ERROR);
+            trigger_error('缺少要插入的列', E_USER_ERROR);
         }
         if (empty($this->values)) {
-            trigger_error('Missing values for insertion', E_USER_ERROR);
+            trigger_error('缺少插入值', E_USER_ERROR);
         }
-
         $sql = ($this->replace ? 'REPLACE INTO ' : 'INSERT INTO ') . $this->table;
         $sql .= ' ' . $this->getColumns();
         $sql .= ' VALUES ' . $this->getPlaceholders();

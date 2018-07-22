@@ -406,13 +406,11 @@ abstract class Statement {
      */
     private function setPlaceholder($text, $count = 0, $separator = ' , ') {
         $result = [];
-
         if ($count > 0) {
             for ($x = 0; $x < $count; ++$x) {
                 $result[] = $text;
             }
         }
-
         return implode($separator, $result);
     }
 
