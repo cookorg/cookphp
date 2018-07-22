@@ -6,6 +6,7 @@ use cook\core\Benchmark;
 use cook\core\Config;
 use cook\core\Invoke;
 use cook\router\Router;
+use cook\core\Autoloader;
 
 /**
  * 应用处理
@@ -35,8 +36,7 @@ class App {
      * 处理路由
      */
     protected static function initroute() {
-        if (is_file(($filename = APPPATH . 'Router.php'))) {
-            require_once $filename;
+        if (Autoloader::requireFile(APPPATH . 'Router.php')) {
             Router::matchUrl() ? (!empty(Router::$route['controller']) && !empty(Router::$route['action']) ? Invoke::method(Router::$route['controller'], Router::$route['action'], Router::getValues()) : (!empty(Router::$route['controller']) ? Invoke::call(Router::$route['controller'], Router::getValues()) : null)) : exit();
         }
     }
