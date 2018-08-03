@@ -7,17 +7,14 @@ namespace cook\database\orm\clause;
  */
 class Where extends Container {
 
-    
-
     /**
      * @param $column
      * @param null   $operator
      * @param string $chainType
      */
     public function where($column, $operator = null, $chainType = 'AND') {
-        $operator = in_array($operator, $this->exp) ? $operator : ($this->exp[$operator] ?? '=');
         stripos(end($this->container), '(') !== false && ($chainType = '');
-        $this->container[] = ' ' . ($chainType ? $chainType . ' ' : '') . $column . ' ' . $operator . ' ?';
+        $this->container[] = ' ' . $chainType.' ' . $column . ' ' . (in_array($operator, $this->exp) ? $operator : ($this->exp[$operator] ?? '=')) . ' ?';
     }
 
     public function group($chainType) {
@@ -42,6 +39,7 @@ class Where extends Container {
         if ($not) {
             $syntax = 'NOT BETWEEN';
         }
+        stripos(end($this->container), '(') !== false && ($chainType = '');
         $this->container[] = ' ' . $chainType . ' ' . $column . ' ' . $syntax . ' ? AND ?';
     }
 
@@ -78,6 +76,7 @@ class Where extends Container {
         if ($not) {
             $syntax = 'NOT IN';
         }
+        stripos(end($this->container), '(') !== false && ($chainType = '');
         $this->container[] = ' ' . $chainType . ' ' . $column . ' ' . $syntax . ' ' . $placeholders;
     }
 
@@ -116,6 +115,7 @@ class Where extends Container {
         if ($not) {
             $syntax = 'NOT LIKE';
         }
+        stripos(end($this->container), '(') !== false && ($chainType = '');
         $this->container[] = ' ' . $chainType . ' ' . $column . ' ' . $syntax . ' ?';
     }
 
@@ -151,6 +151,7 @@ class Where extends Container {
         if ($not) {
             $syntax = 'NOT NULL';
         }
+        stripos(end($this->container), '(') !== false && ($chainType = '');
         $this->container[] = ' ' . $chainType . ' ' . $column . ' IS ' . $syntax;
     }
 
@@ -198,7 +199,7 @@ class Where extends Container {
         foreach ($this->container as $where) {
             $args[] = $where;
         }
-        $this->container=[];
+        $this->container = [];
         return ' WHERE ' . ltrim(ltrim(implode('', $args), ' AND '), ' OR ');
     }
 

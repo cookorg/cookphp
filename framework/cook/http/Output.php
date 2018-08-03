@@ -120,12 +120,13 @@ class Output implements StatusCode {
         foreach (self::$headers as $header) {
             header($header, true);
         }
-//        if (strpos($_SERVER['HTTP_ACCEPT_ENCODING'] ?? '', 'gzip') !== false) {
-//            $output = gzencode($output, 9);
-//            header('Content-Encoding: gzip');
-//            header('Vary: Accept-Encoding');
-//            header('Content-Length:' . strlen($output));
-//        }
+        if (!DEBUG && strpos($_SERVER['HTTP_ACCEPT_ENCODING'] ?? '', 'gzip') !== false) {
+            $output = gzencode($output, 9);
+            header('Content-Encoding: gzip');
+            header('Vary: Accept-Encoding');
+            header('Content-Length:' . strlen($output));
+            header('X-Powered-By:CookPHP');
+        }
         echo $output;
     }
 

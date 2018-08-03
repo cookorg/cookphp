@@ -5,8 +5,9 @@ namespace cook\core;
 use cook\core\Benchmark;
 use cook\core\Config;
 use cook\core\Invoke;
-use cook\router\Router;
 use cook\core\Autoloader;
+use cook\router\Router;
+use Throwable;
 
 /**
  * 应用处理
@@ -37,7 +38,11 @@ class App {
      */
     protected static function initroute() {
         if (Autoloader::requireFile(APPPATH . 'Router.php')) {
-            Router::matchUrl() ? (!empty(Router::$route['controller']) && !empty(Router::$route['action']) ? Invoke::method(Router::$route['controller'], Router::$route['action'], Router::getValues()) : (!empty(Router::$route['controller']) ? Invoke::call(Router::$route['controller'], Router::getValues()) : null)) : exit();
+            try {
+                Router::matchUrl() ? (!empty(Router::$route['controller']) && !empty(Router::$route['action']) ? Invoke::method(Router::$route['controller'], Router::$route['action'], Router::getValues()) : (!empty(Router::$route['controller']) ? Invoke::call(Router::$route['controller'], Router::getValues()) : null)) : exit();
+            } catch (Throwable $ex) {
+                print_r($ex);
+            }
         }
     }
 

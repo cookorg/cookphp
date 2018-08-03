@@ -6,22 +6,9 @@ namespace cook\database\orm\statement;
  * 更新类
  */
 class Update extends Statement {
-    /**
-     * Constructor.
-     *
-     * @param Database $dbh
-     * @param array    $pairs
-     * @param string    $table
-     */
-//    public function __construct($dbh, array $pairs, $table) {
-//        parent::__construct($dbh);
-//        !empty($table) && $this->table($table);
-//        $this->set($pairs);
-//    }
 
     /**
      * @param array $pairs
-     *
      * @return $this
      */
     public function set(array $pairs) {

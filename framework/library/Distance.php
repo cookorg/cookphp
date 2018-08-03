@@ -2,6 +2,8 @@
 
 namespace library;
 
+use Exception;
+
 /**
  * GPS距离
  */
@@ -151,6 +153,7 @@ class Distance {
             throw new Exception('You have tried to set an invalid distance unit.');
         }
         $this->unit = $unit;
+        return $this;
     }
 
     /**

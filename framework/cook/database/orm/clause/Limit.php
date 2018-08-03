@@ -13,16 +13,21 @@ class Limit extends Container {
     private $limit = null;
 
     /**
+     * @var string
+     */
+    private $pattern = '/^[1-9][0-9]*$/i';
+
+    /**
      * @param int $number
      * @param int $page
      */
     public function limit($number, $page = null) {
-        if (preg_match('/^[1-9][0-9]*$/i', $page)) {
+        if (preg_match($this->pattern, $page)) {
             $offset = intval($number) * (intval($page) - 1);
         }
-        if (!empty($offset) && preg_match('/^[1-9][0-9]*$/i', $offset) && preg_match('/^[1-9][0-9]*$/i', $number)) {
+        if (!empty($offset) && preg_match($this->pattern, $offset) && preg_match($this->pattern, $number)) {
             $this->limit = intval($number) . ' OFFSET ' . intval($offset);
-        } elseif (preg_match('/^[1-9][0-9]*$/i', $number)) {
+        } elseif (preg_match($this->pattern, $number)) {
             $this->limit = intval($number);
         }
     }

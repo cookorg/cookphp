@@ -105,7 +105,7 @@ class Strings {
     }
 
     public static function sbuildOrderNo($len = 16) {
-        return date('YmdHi') . substr(implode(null, array_map('ord', str_split(uniqid(), 1))), 0, $len - 12);
+        return date('Ymd').substr(implode(NULL, array_map('ord', str_split(substr(uniqid(), 7, 13), 1))), 0, $len-8);
     }
 
     /**

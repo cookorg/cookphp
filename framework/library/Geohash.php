@@ -103,7 +103,8 @@ class Geohash {
 
     public function neighbors($srcHash) {
 
-        $geohashPrefix = substr($srcHash, 0, strlen($srcHash) - 1);
+        //$geohashPrefix = substr($srcHash, 0, strlen($srcHash) - 1);
+        $neighbors['prefix'] = $srcHash;
 
         $neighbors['top'] = $this->calculateAdjacent($srcHash, 'top');
         $neighbors['bottom'] = $this->calculateAdjacent($srcHash, 'bottom');

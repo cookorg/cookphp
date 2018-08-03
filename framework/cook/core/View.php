@@ -339,6 +339,7 @@ class View {
         $template = stripslashes($content[1]);
         $this->replaceTemplate($template);
         $this->getTemplateFile($template);
+
         return $this->compileInclude($this->removeUTF8Bom(file_get_contents($template)));
     }
 

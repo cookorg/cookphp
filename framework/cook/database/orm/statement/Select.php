@@ -75,7 +75,6 @@ class Select extends Statement {
      * @param string $column
      * @param null   $as
      * @param bool   $distinct
-     *
      * @return $this
      */
     public function count($column = '*', $as = null, $distinct = false) {
@@ -87,7 +86,6 @@ class Select extends Statement {
     /**
      * @param string $column
      * @param null   $as
-     *
      * @return $this
      */
     public function distinctCount($column = '*', $as = null) {
@@ -98,7 +96,6 @@ class Select extends Statement {
     /**
      * @param $column
      * @param null $as
-     *
      * @return $this
      */
     public function max($column, $as = null) {
@@ -110,7 +107,6 @@ class Select extends Statement {
     /**
      * @param $column
      * @param null $as
-     *
      * @return $this
      */
     public function min($column, $as = null) {
@@ -122,7 +118,6 @@ class Select extends Statement {
     /**
      * @param $column
      * @param null $as
-     *
      * @return $this
      */
     public function avg($column, $as = null) {
@@ -134,7 +129,6 @@ class Select extends Statement {
     /**
      * @param $column
      * @param null $as
-     *
      * @return $this
      */
     public function sum($column, $as = null) {
@@ -149,7 +143,6 @@ class Select extends Statement {
      * @param null   $operator
      * @param null   $second
      * @param string $joinType
-     *
      * @return $this
      */
     public function join($table, $first, $operator = null, $second = null, $joinType = 'INNER') {
@@ -162,7 +155,6 @@ class Select extends Statement {
      * @param $first
      * @param null $operator
      * @param null $second
-     *
      * @return $this
      */
     public function leftJoin($table, $first, $operator = null, $second = null) {
@@ -175,7 +167,6 @@ class Select extends Statement {
      * @param $first
      * @param null $operator
      * @param null $second
-     *
      * @return $this
      */
     public function rightJoin($table, $first, $operator = null, $second = null) {
@@ -188,7 +179,6 @@ class Select extends Statement {
      * @param $first
      * @param null $operator
      * @param null $second
-     *
      * @return $this
      */
     public function fullJoin($table, $first, $operator = null, $second = null) {
@@ -198,7 +188,6 @@ class Select extends Statement {
 
     /**
      * @param $columns
-     *
      * @return $this
      */
     public function groupBy($columns) {
@@ -211,7 +200,6 @@ class Select extends Statement {
      * @param null   $operator
      * @param null   $value
      * @param string $chainType
-     *
      * @return $this
      */
     public function having($column, $operator = null, $value = null, $chainType = 'AND') {
@@ -224,7 +212,6 @@ class Select extends Statement {
      * @param $column
      * @param null $operator
      * @param null $value
-     *
      * @return $this
      */
     public function orHaving($column, $operator = null, $value = null) {
@@ -237,7 +224,6 @@ class Select extends Statement {
      * @param $column
      * @param null $operator
      * @param null $value
-     *
      * @return $this
      */
     public function havingCount($column, $operator = null, $value = null) {
@@ -250,7 +236,6 @@ class Select extends Statement {
      * @param $column
      * @param null $operator
      * @param null $value
-     *
      * @return $this
      */
     public function havingMax($column, $operator = null, $value = null) {
@@ -263,7 +248,6 @@ class Select extends Statement {
      * @param $column
      * @param null $operator
      * @param null $value
-     *
      * @return $this
      */
     public function havingMin($column, $operator = null, $value = null) {
@@ -276,7 +260,6 @@ class Select extends Statement {
      * @param $column
      * @param null $operator
      * @param null $value
-     *
      * @return $this
      */
     public function havingAvg($column, $operator = null, $value = null) {
@@ -289,7 +272,6 @@ class Select extends Statement {
      * @param $column
      * @param null $operator
      * @param null $value
-     *
      * @return $this
      */
     public function havingSum($column, $operator = null, $value = null) {
@@ -300,7 +282,6 @@ class Select extends Statement {
 
     /**
      * @param $number
-     *
      * @return $this
      */
     public function offset($number) {
@@ -346,7 +327,6 @@ class Select extends Statement {
 
     /**
      * @param $distinct
-     *
      * @return string
      */
     protected function setDistinct($distinct) {
@@ -358,7 +338,6 @@ class Select extends Statement {
 
     /**
      * @param $as
-     *
      * @return string
      */
     protected function setAs($as) {
